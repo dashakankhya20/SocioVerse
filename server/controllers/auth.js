@@ -31,9 +31,9 @@ export const register = async (req, res) => {
       friends,
       location,
       occupation,
-      viewedProfile,
-      impressions,
-      profileLock,
+      viewedProfile:0,
+      impressions:0,
+      profileLock:false,
       bio,
       relationshipStatus,
       dob,
@@ -42,6 +42,7 @@ export const register = async (req, res) => {
     res.status(201).json(savedUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.log(error);
   }
 };
 
@@ -51,7 +52,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
     if (!user) {
-      res.status(400).json({ message: "User doesn't exist!" });
+      return res.status(400).json({ message: "User doesn't exist!" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);

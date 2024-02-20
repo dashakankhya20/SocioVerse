@@ -42,8 +42,8 @@ const upload = multer({ storage });
 
 // ROUTES WITH FILES
 //so here the picture will be uploaded locally before the user is registered
-app.post("/auth/register", upload.single("picture"), register);
-app.post("/posts", verifyToken, upload.single("picture"), createPost);
+app.post("/auth/register", upload.single("picturePath"), register);
+app.post("/posts", verifyToken, upload.single("picturePath"), createPost);
 
 // ROUTES
 app.use("/auth", authRoutes);
@@ -52,7 +52,7 @@ app.use("/posts", postRoutes);
 app.use("/comments", commentRoutes);
 
 // MONGOOSE SETUP
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT;
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {

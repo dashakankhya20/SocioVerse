@@ -51,12 +51,12 @@ const userSchema = new Schema({
     },
     relationshipStatus: {
         type: String,
-        default: "single"
+        default: "Single"
     },
     dob: {
         type: Date,
         default: null,
-        required: true
+         required: true
     }
 }, {
     timestamps: true

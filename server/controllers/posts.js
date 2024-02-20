@@ -3,8 +3,8 @@ import Post from "../models/Post.js";
 // Creating a post
 export const createPost = async (req, res) => {
   try {
-    const { userId, content, imagePath } = req.body;
-    const newPost = new Post({ userId, content, imagePath });
+    const { userId, content, picturePath } = req.body;
+    const newPost = new Post({ userId, content, picturePath });
     await newPost.save();
     res.status(201).json(newPost);
   } catch (error) {
@@ -36,10 +36,10 @@ export const getUserPosts = async (req, res) => {
 export const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
-    const { content, imagePath } = req.body;
+    const { content, picturePath } = req.body;
     const updatedPost = await Post.findByIdAndUpdate(
       id,
-      { content, imagePath },
+      { content, picturePath },
       { new: true }
     );
     res.status(200).json(updatedPost);

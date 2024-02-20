@@ -1,5 +1,6 @@
 import express from "express";
 import { 
+    getAllUsers,
     getUser,
     getUserFriends,
     updateUser,
@@ -10,6 +11,8 @@ import { verifyToken } from "../middlewares/auth.js";
 
 const router = express.Router();
 // Here the routes will start from /users
+//Get all users 
+router.get("/", getAllUsers);
 // Get a user by ID
 router.get("/:id", verifyToken, getUser);
 // Get user's friends 

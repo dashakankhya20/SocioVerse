@@ -10,7 +10,7 @@ const postSchema = new Schema(
       type: String,
       required: true,
     },
-    imagePath: String,
+    picturePath: String,
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     dislikes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
