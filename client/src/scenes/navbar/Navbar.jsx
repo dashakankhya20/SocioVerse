@@ -9,17 +9,17 @@ import {
   FormControl,
   useTheme,
   useMediaQuery,
-  Icon,
 } from "@mui/material";
+import SearchBar from "scenes/searchBar/SearchBar";
 //icons to be included.
 import DarkModeIcon from '@mui/icons-material/DarkMode';
-import SearchIcon from '@mui/icons-material/Search';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import MessageIcon from '@mui/icons-material/Message';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import HelpIcon from '@mui/icons-material/Help';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+
 
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "state";
@@ -41,9 +41,8 @@ const Navbar = () => {
   const alt = theme.palette.background.alt;
 
   const fullName = `${user.firstName} ${user.lastName}`;
-  //const fullName = "Akankhya Dash";
 
-  return <FlexBetween padding="1rem 6%" backgroundColor={alt}>
+  return <FlexBetween padding="1rem 6%" backgroundColor={alt} position="relative">
     <FlexBetween gap="1.75rem">
       <Typography
         fontWeight="bold"
@@ -61,20 +60,7 @@ const Navbar = () => {
       </Typography>
       {/* Not for mobile screens */}
       {isNonMobileScreens && (
-        <FlexBetween
-          backgroundColor={neutralLight}
-          borderRadius="9px"
-          gap="3rem"
-          //top-bottom left-right
-          padding="0.1rem 1.5rem"
-        >
-          <InputBase
-            placeholder="Search..."
-          />
-          <IconButton>
-            <SearchIcon />
-          </IconButton>
-        </FlexBetween>
+        <SearchBar />
       )}
     </FlexBetween>
 

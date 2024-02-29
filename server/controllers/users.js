@@ -1,6 +1,5 @@
 import User from "../models/User.js";
 
-
 export const getAllUsers = async (req, res) => {
   try {
     const user = await User.find({});
@@ -8,8 +7,8 @@ export const getAllUsers = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
-}
-// get or search for a user 
+};
+// get a user by id
 export const getUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -71,26 +70,29 @@ export const getUser = async (req, res) => {
 //     res.status(404).json({ message: error.message });
 //   }
 // };
-export const getUserFriends = async(req, res) => {
+//get a user's friend by userid
+export const getUserFriends = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findById(id).populate('friends');
+    const user = await User.findById(id).populate("friends");
     res.status(200).json(user.friends);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
-}
+};
 
 // Updating user profile
-export const updateUser = async(req, res) => {
+export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const updatedUser = await User.findByIdAndUpdate(id, req.body, { new: true});
+    const updatedUser = await User.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
     res.status(200).json(updatedUser);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}
+};
 
 // Adding or removing friend
 export const addRemoveFriend = async (req, res) => {
@@ -152,13 +154,33 @@ export const addRemoveFriend = async (req, res) => {
   }
 };
 
-// Deleting a user 
+// Deleting a user
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
     await User.findByIdAndDelete(id);
-    res.status(200).json({ message: "User deleted successfully!"});
+    res.status(200).json({ message: "User deleted successfully!" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}
+};
+
+//search for a user by the search term
+export const searchUsers = async (req, res) => {
+  try {
+    const searchTerm = req.query.searchTerm;
+   // console.log(searchTerm)
+    //searching users by their firstname or lastname
+    const users = await User.find({
+      $or: [
+        { firstName: { $regex: searchTerm, $options: "i" } },
+        { lastName: { $regex: searchTerm, $options: "i" } },
+      ],
+    });
+    //console.log("Users found:", users);
+
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};

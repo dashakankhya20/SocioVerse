@@ -5,12 +5,15 @@ import {
     getUserFriends,
     updateUser,
     addRemoveFriend,
-    deleteUser
+    deleteUser,
+    searchUsers
 } from "../controllers/users.js";
 import { verifyToken } from "../middlewares/auth.js";
 
 const router = express.Router();
 // Here the routes will start from /users
+//get a user by the search term
+router.get('/search', verifyToken, searchUsers);
 //Get all users 
 router.get("/", getAllUsers);
 // Get a user by ID
@@ -23,6 +26,7 @@ router.put("/:id", verifyToken,updateUser);
 router.put('/:id/friends/:friendId', addRemoveFriend);
 // Delete a user
 router.delete('/:id', deleteUser);
+
 
 
 export default router;
