@@ -11,6 +11,7 @@ import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
 import commentRoutes from "./routes/comments.js";
+import conversationRoutes from "./routes/conversation.js";
 import { register } from "./controllers/auth.js";
 import { verifyToken } from "./middlewares/auth.js";
 import { createPost } from "./controllers/posts.js";
@@ -42,14 +43,16 @@ const upload = multer({ storage });
 
 // ROUTES WITH FILES
 //so here the picture will be uploaded locally before the user is registered
-app.post("/auth/register", upload.single("picturePath"), register);
-app.post("/posts", verifyToken, upload.single("picturePath"), createPost);
+//here .picture should be there instead of picturePath
+app.post("/auth/register", upload.single("picture"), register);
+app.post("/posts", verifyToken, upload.single("picture"), createPost);
 
 // ROUTES
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/posts", postRoutes);
 app.use("/comments", commentRoutes);
+app.use("/conversation", conversationRoutes);
 
 // MONGOOSE SETUP
 const PORT = process.env.PORT;

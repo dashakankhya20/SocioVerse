@@ -19,7 +19,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import HelpIcon from '@mui/icons-material/Help';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-
+import { Link } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "state";
@@ -60,7 +60,7 @@ const Navbar = () => {
       </Typography>
       {/* Not for mobile screens */}
       {isNonMobileScreens && (
-        <SearchBar />
+        <SearchBar placeholder="Make a Search!" width="15rem" />
       )}
     </FlexBetween>
 
@@ -74,7 +74,12 @@ const Navbar = () => {
             <LightModeIcon sx={{ color: dark, fontSize: "25px" }} />
           )}
         </IconButton>
-        <MessageIcon sx={{ fontSize: "25px" }} />
+        <Link to="/message">
+          <IconButton sx={{ color: "black" }}>
+            <MessageIcon sx={{ fontSize: "25px" }} />
+          </IconButton>
+        </Link>
+
         <NotificationsIcon sx={{ fontSize: "25px" }} />
         <HelpIcon sx={{ fontSize: "25px" }} />
         <FormControl variant="standard" value={fullName}>
@@ -86,7 +91,7 @@ const Navbar = () => {
               borderRadius: "0.25rem",
               p: "0.25rem 1rem",
               "& .MuiSvgIcon-root": {
-                pr: "0.25rem",
+                pr: "0.10rem",
                 width: "3rem"
               },
               "& .MuiSelect-select:focus": {
@@ -145,6 +150,7 @@ const Navbar = () => {
               <LightModeIcon sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
+
           <MessageIcon sx={{ fontSize: "25px" }} />
           <NotificationsIcon sx={{ fontSize: "25px" }} />
           <HelpIcon sx={{ fontSize: "25px" }} />

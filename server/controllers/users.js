@@ -98,6 +98,9 @@ export const updateUser = async (req, res) => {
 export const addRemoveFriend = async (req, res) => {
   try {
     const { id, friendId } = req.params;
+    if(id == friendId){
+      res.status(400).json({message: "You can't friend yourself!"});
+    }
     const user = await User.findById(id);
     const friend = await User.findById(friendId);
 

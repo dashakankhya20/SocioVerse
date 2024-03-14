@@ -6,7 +6,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import UserImage from 'components/UserImage';
 import { useNavigate } from 'react-router-dom';
 
-const SearchBar = () => {
+const SearchBar = ({placeholder, width}) => {
     const token = useSelector((state) => state.token);
     const theme = useTheme();
     const neutralLight = theme.palette.neutral.light;
@@ -99,9 +99,10 @@ const SearchBar = () => {
                             type: 'search',
                             startAdornment: <SearchIcon />,
                         }}
+                        placeholder={placeholder}
                         sx={{
                             backgroundColor: neutralLight,
-                            width: "20rem",
+                            width: {width},
                         }}
                     />
                 )}

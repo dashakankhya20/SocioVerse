@@ -32,7 +32,7 @@ const registerSchema = yup.object().shape({
   lastName: yup.string().required("required"),
   email: yup.string().email("Invalid email").required("required"),
   password: yup.string().required("required").min(8).max(8),
-  picturePath: yup.string().required("required"),
+  picture: yup.string().required("required"),
   location: yup.string().required("required"),
   occupation: yup.string().required("required"),
   bio: yup.string().required("required").max(200, "Bio must be atmost 200 characters"),
@@ -50,7 +50,7 @@ const initialValuesRegister = {
   lastName: "",
   email: "",
   password: "",
-  picturePath: "",
+  picture: "",
   location: "",
   occupation: "",
   bio: "",
@@ -84,8 +84,8 @@ const Form = () => {
       formData.append(value, values[value]);
     }
     console.log(values);
-    
-    formData.append('picturePath', values.picturePath.name);
+
+    formData.append('picturePath', values.picture.name);
     const savedUserResponse = await fetch(
       "http://localhost:3001/auth/register",
       {
@@ -127,7 +127,7 @@ const Form = () => {
     if (isRegister) await register(values, onSubmitProps);
   }
 
-  
+
 
   return (
     <Formik
@@ -215,7 +215,7 @@ const Form = () => {
                   <Dropzone
                     acceptedFiles=".jpg,.jpeg,.png"
                     multiple={false}
-                    onDrop={(acceptedFiles) => setFieldValue("picturePath", acceptedFiles[0])}
+                    onDrop={(acceptedFiles) => setFieldValue("picture", acceptedFiles[0])}
                   >
 
 
@@ -231,11 +231,11 @@ const Form = () => {
                         <input
                           {...getInputProps()}
                         />
-                        {!values.picturePath ? (
+                        {!values.picture ? (
                           <p>Add Picture Here</p>
                         ) : (
                           <FlexBetween>
-                            <Typography>{values.picturePath.name}</Typography>
+                            <Typography>{values.picture.name}</Typography>
                             <EditIcon />
                           </FlexBetween>
                         )}
@@ -323,12 +323,12 @@ const Form = () => {
                   </Select>
                 </Box>
                 {/* date of birth */}
-                
+
                 <Box
                   sx={{ gridColumn: "span 2" }}
                 >
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker 
+                    <DatePicker
                       label="Enter your dob"
                       onChange={(date) => setFieldValue('dob', date)}
                       onBlur={handleBlur}

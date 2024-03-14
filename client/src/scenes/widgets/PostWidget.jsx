@@ -1,6 +1,7 @@
-import React, {useEffect} from 'react';
-import { ChatBubbleOutlineOutlined, FavoriteBorderOutlined, FavoriteOutlined, ShareOutlined, ThumbsUpDownOutlined} from '@mui/icons-material';
-import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
+import React, { useEffect } from 'react';
+import { ChatBubbleOutlineOutlined } from '@mui/icons-material';
+import { IconButton, Typography, useTheme } from "@mui/material";
+import { ShareOutlined } from '@mui/icons-material';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
@@ -10,12 +11,11 @@ import Friend from 'components/Friend';
 import WidgetWrapper from 'components/WidgetWrapper';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { setPost } from 'state';
+import CommentWidget from './CommentWidget';
 
 const PostWidget = ({ postData }) => {
-  console.log("PostData", postData);
-  const [isComment, setIsComment] = useState(false);
+  console.log("PostWidget", postData.picturePath);
   const [postUserData, setPostUserData] = useState([]);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
@@ -26,7 +26,8 @@ const PostWidget = ({ postData }) => {
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
-  
+  const dark = palette.neutral.dark;
+
 
   const patchLike = async () => {
     const response = await fetch(`http://localhost:3001/${postId}/like/${loggedInUserId}`, {
@@ -40,9 +41,7 @@ const PostWidget = ({ postData }) => {
     const updatedPost = await response.json();
     dispatch(setPost({ post: updatedPost }));
   }
-  const commentsByPost = async () => {
 
-  }
   const getUserDetails = async () => {
     const response = await fetch(`http://localhost:3001/users/${postData.userId}`, {
       method: "GET",
@@ -52,31 +51,33 @@ const PostWidget = ({ postData }) => {
     })
     const data = await response.json();
     setPostUserData(data);
-}
+  }
 
   useEffect(() => {
-    
-  getUserDetails();
+
+    getUserDetails();
   }, []) //eslint-disable-line react-hooks/exhaustive-deps
   const fullName = postUserData.firstName + " " + postUserData.lastName;
- console.log("PostUserData ", postUserData)
+  //console.log("PostUserData ", postUserData);
+  console.log("Post Widget",postData)
   return (
     <WidgetWrapper m="2rem 0">
-      <Friend 
-      friendId={postUserData._id}
-      name={fullName}
-      subtitle={postUserData.location}
-      userPicturePath={postUserData.picturePath}
+      <Friend
+        friendId={postUserData._id}
+        name={fullName}
+        subtitle={postUserData.location}
+        userPicturePath={postUserData.picturePath}
       />
-      <Typography color={main} sx={{mt:"1rem"}}>
+      <Typography color={main} sx={{ mt: "1rem" }}>
         {postData.content}
       </Typography>
       {postData.picturePath && (
-        <img 
+
+        <img
           width="100%"
           height="auto"
           alt={postData.picturePath}
-          style={{borderRadius: "0.75rem", marginTop: "0.75rem"}}
+          style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
           src={`http://localhost:3001/assets/${postData.picturePath}`}
         />
       )}
@@ -85,9 +86,9 @@ const PostWidget = ({ postData }) => {
           <FlexBetween gap="0.3rem">
             <IconButton onClick={patchLike}>
               {isLiked ? (
-                <ThumbUpIcon sx={{color:primary}}/>
-              ): (
-                <ThumbUpOffAltIcon/>
+                <ThumbUpIcon sx={{ color: primary }} />
+              ) : (
+                <ThumbUpOffAltIcon />
               )}
             </IconButton>
             <Typography>
@@ -97,8 +98,8 @@ const PostWidget = ({ postData }) => {
           <FlexBetween gap="0.3rem">
             <IconButton onClick={patchLike}>
               {isLiked ? (
-                <ThumbDownIcon sx={{color:primary}}/>
-              ): (
+                <ThumbDownIcon sx={{ color: primary }} />
+              ) : (
                 <ThumbDownOffAltIcon />
               )}
             </IconButton>
@@ -113,27 +114,14 @@ const PostWidget = ({ postData }) => {
             <Typography>
               {postData.comments.length}
             </Typography>
+
           </FlexBetween>
         </FlexBetween>
         <IconButton>
           <ShareOutlined />
         </IconButton>
       </FlexBetween>
-      {/*
-      {isComment && (
-        <Box mt="0.5rem">
-          {comments.map((comment, i) => (
-            <Box key={`${name}-${i}}>
-            <Divider />
-            <Typography sx={{}}>
-              {comment}
-            </Typography>
-            </Box>
-          ))}
-           <Divider />
-        </Box>
-      )}
-      */}
+      <CommentWidget postId={postData._id} commentData={postData.comments} />
     </WidgetWrapper>
   )
 }

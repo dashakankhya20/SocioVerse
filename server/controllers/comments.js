@@ -1,6 +1,7 @@
 import Comment from "../models/Comment.js";
+import Post from "../models/Post.js";
 
-//Creating a comment
+// Creating a comment
 export const createComment = async (req, res) => {
   try {
     const { postId, userId, content } = req.body;
@@ -10,7 +11,18 @@ export const createComment = async (req, res) => {
       content,
     });
     await newComment.save();
-    res.status(201).json(newComment);
+
+    // Update the post document with the new comment's id
+    await Post.findByIdAndUpdate(
+      postId,
+      { $push: { comments: newComment._id } },
+      { new: true }
+    );
+
+    // Fetch all comments from the Comment collection
+    const comments = await Comment.find();
+
+    res.status(201).json(comments); // Return all comments
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -20,7 +32,10 @@ export const createComment = async (req, res) => {
 export const getCommentsByPostId = async (req, res) => {
   try {
     const { postId } = req.params;
-    const comments = await Comment.find({ postId });
+    const comments = await Comment.find({ postId }).populate({
+      path: 'userId',
+      select:'firstName lastName picturePath'
+    });
     res.status(200).json(comments);
   } catch (error) {
     res.status(404).json({ message: error.message });

@@ -28,8 +28,8 @@ const PostsWidget = ({ userId, isProfile = false }) => {
         const data = await response.json();
         dispatch(setPosts({ posts: data }));
     }
-   
-    console.log("Posts", posts);
+
+    console.log("PostsWidget", posts);
     useEffect(() => {
         if (isProfile) {
             getUserPosts();

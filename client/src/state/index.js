@@ -4,9 +4,10 @@ const initialState = {
   mode: "light",
   user: null,
   token: null,
+  users: [],
   posts: [],
-  friends:[]
-  // comments: []
+  friends: [],
+  comments: [],
 };
 
 export const authSlice = createSlice({
@@ -41,9 +42,23 @@ export const authSlice = createSlice({
       });
       state.posts = updatedPosts;
     },
+    setComments: (state, action) => {
+      state.comments = action.payload.comments;
+    },
+    setUsers: (state, action) => {
+      state.users = action.payload.users; 
+    }
   },
 });
 
-export const { setMode, setLogin, setLogout, setFriends, setPosts, setPost } =
-  authSlice.actions;
+export const {
+  setMode,
+  setLogin,
+  setLogout,
+  setFriends,
+  setPosts,
+  setPost,
+  setComments,
+  setUsers
+} = authSlice.actions;
 export default authSlice.reducer;

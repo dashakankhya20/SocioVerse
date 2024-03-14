@@ -15,7 +15,8 @@ import {
     useTheme,
     Button,
     IconButton,
-    useMediaQuery
+    useMediaQuery,
+    imageListItemBarClasses
 } from '@mui/material';
 import FlexBetween from "components/FlexBetween";
 import Dropzone from "react-dropzone";
@@ -35,14 +36,18 @@ const MyPostWidget = ({ picturePath }) => {
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
     const mediumMain = palette.neutral.mediumMain;
     const medium = palette.neutral.medium;
-
+    //console.log("Image",image)
     const handlePost = async () => {
         const formData = new FormData();
         formData.append("userId", _id);
         formData.append("content", post);
         if (image) {
            // formData.append("picturePath", image);
+           console.log("Image was appended!");
+            formData.append("picture", image);
             formData.append("picturePath", image.name);
+        }else{
+            console.log("Image was not uploaded!");
         }
         
         const response = await fetch(`http://localhost:3001/posts`, {
