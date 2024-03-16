@@ -4,7 +4,8 @@ import {
     getUser,
     getUserFriends,
     updateUser,
-    addRemoveFriend,
+    createFriend,
+    removeFriend,
     deleteUser,
     searchUsers
 } from "../controllers/users.js";
@@ -22,10 +23,11 @@ router.get("/:id", verifyToken, getUser);
 router.get("/:id/friends", verifyToken, getUserFriends);
 // Update user profile
 router.put("/:id", verifyToken,updateUser);
-// Add or remove friend
-router.put('/:id/friends/:friendId', addRemoveFriend);
+// Add friend
+router.put('/:id/friends/:friendId', createFriend);
 // Delete a user
 router.delete('/:id', deleteUser);
+router.delete('/:id/friends/:friendId', removeFriend);
 
 
 

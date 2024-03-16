@@ -28,6 +28,7 @@ const CommentWidget = ({ postId }) => {
             const comments = await response.json();
             dispatch(setComments({ comments }));
             console.log(comments);
+            setComment("");
         } catch (error) {
             console.error('Error posting comment:', error);
         }

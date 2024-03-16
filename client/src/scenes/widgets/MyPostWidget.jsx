@@ -16,7 +16,7 @@ import {
     Button,
     IconButton,
     useMediaQuery,
-    imageListItemBarClasses
+    CircularProgress
 } from '@mui/material';
 import FlexBetween from "components/FlexBetween";
 import Dropzone from "react-dropzone";
@@ -49,7 +49,6 @@ const MyPostWidget = ({ picturePath }) => {
         }else{
             console.log("Image was not uploaded!");
         }
-        
         const response = await fetch(`http://localhost:3001/posts`, {
             method: "POST",
             headers: { Authorization: `Bearer ${token}` },

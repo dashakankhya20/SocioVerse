@@ -10,6 +10,7 @@ const FriendListWidget = ({ userId }) => {
     const { palette } = useTheme();
     const token = useSelector((state) => state.token);
     const friends = useSelector((state) => state.user.friends);
+    console.log(friends);
 
     const getFriends = async () => {
         const response = await fetch(`http://localhost:3001/users/${userId}/friends`, {
@@ -35,7 +36,7 @@ const FriendListWidget = ({ userId }) => {
                 Friend List
             </Typography>
             <Box display="flex" flexDirection="column" gap="1.5rem">
-                {friends ? (
+                {Array.isArray(friends) ? (
                     friends.map((friend) => (
                         <Friend
                             key={friend._id}

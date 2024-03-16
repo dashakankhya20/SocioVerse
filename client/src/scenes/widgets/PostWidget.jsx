@@ -17,31 +17,42 @@ import CommentWidget from './CommentWidget';
 const PostWidget = ({ postData }) => {
   console.log("PostWidget", postData.picturePath);
   const [postUserData, setPostUserData] = useState([]);
+  const [display, setDisplay] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
   const postId = postData._id;
-  const isLiked = Boolean(postData.likes[loggedInUserId]);
-  const likeCount = Object.keys(postData.likes).length;
+  const isLiked = Boolean(postData.likes.includes(loggedInUserId));
+  const isDisliked = Boolean(postData.dislikes.includes(loggedInUserId));
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
   const dark = palette.neutral.dark;
-
+  console.log("Liked: ", isLiked);
+  console.log("Dislike: ", isDisliked);
 
   const patchLike = async () => {
-    const response = await fetch(`http://localhost:3001/${postId}/like/${loggedInUserId}`, {
-      method: "PATCH",
+    const response = await fetch(`http://localhost:3001/posts/${postId}/like/${loggedInUserId}`, {
+      method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ postId: postData._id, userId: loggedInUserId })
     });
     const updatedPost = await response.json();
     dispatch(setPost({ post: updatedPost }));
   }
-
+  const patchDislike = async () => {
+    const response = await fetch(`http://localhost:3001/posts/${postId}/dislike/${loggedInUserId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+    });
+    const updatedPost = await response.json();
+    dispatch(setPost({ post: updatedPost }));
+  }
   const getUserDetails = async () => {
     const response = await fetch(`http://localhost:3001/users/${postData.userId}`, {
       method: "GET",
@@ -52,22 +63,29 @@ const PostWidget = ({ postData }) => {
     const data = await response.json();
     setPostUserData(data);
   }
-
+  console.log("Post User Data", postUserData);
   useEffect(() => {
 
     getUserDetails();
   }, []) //eslint-disable-line react-hooks/exhaustive-deps
-  const fullName = postUserData.firstName + " " + postUserData.lastName;
-  //console.log("PostUserData ", postUserData);
-  console.log("Post Widget",postData)
+  const fullName = postUserData && postUserData.firstName + " " + postUserData.lastName;
+  console.log("PostUserData ", postUserData);
+  console.log("Post Widget", postData)
+
+  const showComments = () => {
+    setDisplay(prevDisplay => !prevDisplay);
+  }
   return (
     <WidgetWrapper m="2rem 0">
-      <Friend
-        friendId={postUserData._id}
-        name={fullName}
-        subtitle={postUserData.location}
-        userPicturePath={postUserData.picturePath}
-      />
+      {postUserData &&
+        <Friend
+          friendId={postUserData._id}
+          name={fullName}
+          subtitle={postUserData.location}
+          userPicturePath={postUserData.picturePath}
+        />
+      }
+
       <Typography color={main} sx={{ mt: "1rem" }}>
         {postData.content}
       </Typography>
@@ -92,23 +110,23 @@ const PostWidget = ({ postData }) => {
               )}
             </IconButton>
             <Typography>
-              {likeCount} likes
+              {postData.likes.length} likes
             </Typography>
           </FlexBetween>
           <FlexBetween gap="0.3rem">
-            <IconButton onClick={patchLike}>
-              {isLiked ? (
+            <IconButton onClick={patchDislike}>
+              {isDisliked ? (
                 <ThumbDownIcon sx={{ color: primary }} />
               ) : (
                 <ThumbDownOffAltIcon />
               )}
             </IconButton>
             <Typography>
-              {likeCount} dislikes
+              {postData.dislikes.length} dislikes
             </Typography>
           </FlexBetween>
           <FlexBetween gap="0.3rem">
-            <IconButton >
+            <IconButton onClick={showComments}>
               <ChatBubbleOutlineOutlined />
             </IconButton>
             <Typography>
@@ -121,7 +139,7 @@ const PostWidget = ({ postData }) => {
           <ShareOutlined />
         </IconButton>
       </FlexBetween>
-      <CommentWidget postId={postData._id} commentData={postData.comments} />
+      {display && <CommentWidget postId={postData._id} commentData={postData.comments} />}
     </WidgetWrapper>
   )
 }

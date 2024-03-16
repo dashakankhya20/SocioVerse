@@ -65,27 +65,42 @@ export const likePost = async (req, res) => {
     const { postId, userId } = req.params;
     const post = await Post.findById(postId);
 
-    // To check is the user has already liked the post
+    // Remove userId from dislikes array if present
+    const dislikeIndex = post.dislikes.indexOf(userId);
+    if (dislikeIndex !== -1) {
+      post.dislikes.splice(dislikeIndex, 1);
+    }
+
+    // Add userId to likes array if not already liked
     if (!post.likes.includes(userId)) {
       post.likes.push(userId);
       await post.save();
     }
+
     res.status(200).json(post.likes.length);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-//Disliking a post
+// Disliking a post
 export const dislikePost = async (req, res) => {
   try {
     const { postId, userId } = req.params;
     const post = await Post.findById(postId);
-    // To check if the user has already disliked the post
+
+    // Remove userId from likes array if present
+    const likeIndex = post.likes.indexOf(userId);
+    if (likeIndex !== -1) {
+      post.likes.splice(likeIndex, 1);
+    }
+
+    // Add userId to dislikes array if not already disliked
     if (!post.dislikes.includes(userId)) {
       post.dislikes.push(userId);
       await post.save();
     }
+
     res.status(200).json(post.dislikes.length);
   } catch (error) {
     res.status(400).json({ message: error.message });

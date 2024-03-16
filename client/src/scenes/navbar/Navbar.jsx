@@ -74,11 +74,11 @@ const Navbar = () => {
             <LightModeIcon sx={{ color: dark, fontSize: "25px" }} />
           )}
         </IconButton>
-        <Link to="/message">
+        {/* <Link to="/message">
           <IconButton sx={{ color: "black" }}>
             <MessageIcon sx={{ fontSize: "25px" }} />
           </IconButton>
-        </Link>
+        </Link> */}
 
         <NotificationsIcon sx={{ fontSize: "25px" }} />
         <HelpIcon sx={{ fontSize: "25px" }} />
@@ -151,7 +151,7 @@ const Navbar = () => {
             )}
           </IconButton>
 
-          <MessageIcon sx={{ fontSize: "25px" }} />
+          {/* <MessageIcon sx={{ fontSize: "25px" }} /> */}
           <NotificationsIcon sx={{ fontSize: "25px" }} />
           <HelpIcon sx={{ fontSize: "25px" }} />
           <FormControl variant="standard" value={fullName}>

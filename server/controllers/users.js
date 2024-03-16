@@ -94,66 +94,68 @@ export const updateUser = async (req, res) => {
   }
 };
 
-// Adding or removing friend
-export const addRemoveFriend = async (req, res) => {
+// Create a friend
+export const createFriend = async (req, res) => {
   try {
     const { id, friendId } = req.params;
-    if(id == friendId){
-      res.status(400).json({message: "You can't friend yourself!"});
-    }
+    console.log(id);
+
+    // Check if the user and friend exist
     const user = await User.findById(id);
     const friend = await User.findById(friendId);
-
-    if (user.friends.includes(friendId)) {
-      user.friends = user.friends.filter((id) => id !== friendId);
-      friend.friends = friend.friends.filter((id) => id !== id);
-    } else {
-      user.friends.push(friendId);
-      friend.friends.push(id);
+    if (!user) {
+      return res.status(404).json({ message: "User  not found" });
     }
-    await user.save();
-    await friend.save();
-    const friends = await Promise.all(
-      user.friends.map((id) => User.findById(id))
-    );
-    const formattedFriends = friends.map(
-      ({
-        _id,
-        firstName,
-        lastName,
-        email,
-        picturePath,
-        friends,
-        location,
-        occupation,
-        viewedProfile,
-        impressions,
-        profileLock,
-        bio,
-        relationshipStatus,
-        dob,
-      }) => {
-        return {
-          _id,
-          firstName,
-          lastName,
-          email,
-          picturePath,
-          friends,
-          location,
-          occupation,
-          viewedProfile,
-          impressions,
-          profileLock,
-          bio,
-          relationshipStatus,
-          dob,
-        };
-      }
-    );
-    res.status(200).json(formattedFriends);
+    if (!friend) {
+      return res.status(404).json({ message: "friend not found" });
+    }
+    // Add friendId to user's friends list
+    if (!user.friends.includes(friendId)) {
+      user.friends.push(friendId);
+      await user.save();
+    }
+
+    // Add userId to friend's friends list
+    if (!friend.friends.includes(id)) {
+      friend.friends.push(id);
+      await friend.save();
+    }
+
+    // Return updated user data
+    return res.status(200).json(user);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+// Remove a friend
+export const removeFriend = async (req, res) => {
+  try {
+    const { id, friendId } = req.params;
+
+    // Check if the user and friend exist
+    const user = await User.findById(id);
+    const friend = await User.findById(friendId);
+    if (!user || !friend) {
+      return res.status(404).json({ message: "User or friend not found" });
+    }
+
+    // Remove friendId from user's friends list
+    if (user.friends.includes(friendId)) {
+      user.friends = user.friends.filter((id) => id.toString() !== friendId);
+      await user.save();
+    }
+
+    // Remove userId from friend's friends list
+    if (friend.friends.includes(id)) {
+      friend.friends = friend.friends.filter((friend_id) => friend_id.toString() !== id);
+      await friend.save();
+    }
+
+    // Return updated user data
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
   }
 };
 
@@ -172,7 +174,7 @@ export const deleteUser = async (req, res) => {
 export const searchUsers = async (req, res) => {
   try {
     const searchTerm = req.query.searchTerm;
-   // console.log(searchTerm)
+    // console.log(searchTerm)
     //searching users by their firstname or lastname
     const users = await User.find({
       $or: [
