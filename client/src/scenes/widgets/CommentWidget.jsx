@@ -1,18 +1,42 @@
-import { useState } from 'react';
-import { InputBase, Box, Button, useTheme } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { InputBase, Box, Button, useTheme, Typography } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import WidgetWrapper from 'components/WidgetWrapper';
 import UserImage from 'components/UserImage';
 import Comment from './Comment';
-import { setComments } from 'state';
+import { setPost } from 'state';
 
-const CommentWidget = ({ postId }) => {
+const CommentWidget = ({ postId, postData }) => {
     const { palette } = useTheme();
+    const medium = palette.neutral.medium;
     const [comment, setComment] = useState('');
+    const [commentsByPostId, setCommentsByPostId] = useState([]);
     const user = useSelector((state) => state.user);
     const token = useSelector((state) => state.token);
+    
     const dispatch = useDispatch();
     const comments = useSelector((state) => state.comments);
+    console.log(comments)
+
+    const getCommentsByPostId = async () => {
+        try {
+          const response = await fetch(`http://localhost:3001/comments/post/${postId}`, {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const comments = await response.json();
+          setCommentsByPostId(comments);
+
+        } catch (error) {
+          console.error('Error fetching comments:', error);
+        }
+      };
+    
+      useEffect(() => {
+        // Fetch comments only when postId changes
+        getCommentsByPostId();
+      }, [postId]); // Only re-run the effect if postId changes
+      
 
     const postComment = async () => {
         try {
@@ -25,15 +49,24 @@ const CommentWidget = ({ postId }) => {
                 body: JSON.stringify({ postId: postId, userId: user._id, content: comment })
             });
 
-            const comments = await response.json();
-            dispatch(setComments({ comments }));
-            console.log(comments);
+            const userIds = await response.json();
+
+            // Create a new post object with the updated comments array (user IDs)
+            const updatedPost = {
+                ...postData,
+                comments: userIds,
+            };
+
+            // Dispatch the setPost action with the updated post
+            dispatch(setPost({ post: updatedPost }));
+             // Fetch the latest comments by post ID
+            getCommentsByPostId();
             setComment("");
         } catch (error) {
             console.error('Error posting comment:', error);
         }
     };
-
+    console.log("Post after comment: ",postData)
     const handleCancel = () => {
         setComment('');
     };
@@ -74,10 +107,15 @@ const CommentWidget = ({ postId }) => {
                     </Box>
                 </Box>
             </Box>
-            {comments ? (
-                <Comment postId={postId} />
+            {commentsByPostId.length > 0 ? (
+                <Comment commentsByPostId={commentsByPostId} />
             ) : (
-                "No comments yet!"
+                <Typography 
+                color={medium}
+                textAlign="center"
+                >
+                    No comments yet!
+                </Typography>
             )}
 
         </WidgetWrapper>

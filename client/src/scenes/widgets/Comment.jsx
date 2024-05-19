@@ -5,31 +5,13 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 
-const Comment = ({ postId }) => {
+const Comment = ({ commentsByPostId }) => {
   const { palette } = useTheme();
-  const [commentsByPostId, setCommentsByPostId] = useState([]);
-  const token = useSelector((state) => state.token);
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
   const navigate = useNavigate();
 
-  const getCommentsByPostId = async () => {
-    try {
-      const response = await fetch(`http://localhost:3001/comments/post/${postId}`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const comments = await response.json();
-      setCommentsByPostId(comments);
-    } catch (error) {
-      console.error('Error fetching comments:', error);
-    }
-  };
-
-  useEffect(() => {
-    // Fetch comments only when postId changes
-    getCommentsByPostId();
-  }, [postId]); // Only re-run the effect if postId changes
+  console.log(commentsByPostId)
 
   return (
     <div>

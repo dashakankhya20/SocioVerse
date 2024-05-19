@@ -77,7 +77,7 @@ export const likePost = async (req, res) => {
       await post.save();
     }
 
-    res.status(200).json(post.likes.length);
+    res.status(200).json(post.likes);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -101,7 +101,7 @@ export const dislikePost = async (req, res) => {
       await post.save();
     }
 
-    res.status(200).json(post.dislikes.length);
+    res.status(200).json(post.dislikes);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

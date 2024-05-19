@@ -148,7 +148,9 @@ export const removeFriend = async (req, res) => {
 
     // Remove userId from friend's friends list
     if (friend.friends.includes(id)) {
-      friend.friends = friend.friends.filter((friend_id) => friend_id.toString() !== id);
+      friend.friends = friend.friends.filter(
+        (friend_id) => friend_id.toString() !== id
+      );
       await friend.save();
     }
 
@@ -187,5 +189,30 @@ export const searchUsers = async (req, res) => {
     res.status(200).json(users);
   } catch (error) {
     res.status(404).json({ message: error.message });
+  }
+};
+
+// To increment viewedProfile
+export const viewedProfileIncrement = async (req, res) => {
+  const { profileUserId, viewerUserId } = req.body;
+
+  try {
+    // Find the user whose profile is being viewed
+    const profileUser = await User.findById(profileUserId);
+
+    if (!profileUser) {
+      return res.status(404).json({ message: "Profile user not found" });
+    }
+
+    // Increment the viewedProfile count
+    profileUser.viewedProfile += 1;
+    await profileUser.save();
+
+    return res
+      .status(200)
+      .json({ message: "Viewed profile count incremented successfully" });
+  } catch (error) {
+    console.error("Error viewing profile:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

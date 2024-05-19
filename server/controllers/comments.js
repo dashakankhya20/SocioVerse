@@ -19,14 +19,16 @@ export const createComment = async (req, res) => {
       { new: true }
     );
 
-    // Fetch all comments from the Comment collection
-    const comments = await Comment.find();
+    // Fetch comments for the specific post and extract user IDs
+    const comments = await Comment.find({ postId }).populate('userId', '_id');
+    const userIds = comments.map(comment => comment.userId._id);
 
-    res.status(201).json(comments); // Return all comments
+    res.status(201).json(userIds); // Return user IDs of people who commented
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
+
 
 // Get all comments of a specific post
 export const getCommentsByPostId = async (req, res) => {
