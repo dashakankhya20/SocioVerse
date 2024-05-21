@@ -47,6 +47,7 @@ import {
       occupation,
       viewedProfile,
       impressions,
+      recentViews,
       friends,
       dob,
       relationshipStatus
@@ -121,17 +122,18 @@ import {
         {/* THIRD ROW */}
         <Box p="1rem 0">
           <FlexBetween mb="0.5rem">
-            <Typography color={medium}>Who's viewed your profile</Typography>
+            <Typography color={medium}>Profile Views</Typography>
             <Typography color={main} fontWeight="500">
-              {viewedProfile}
+              {recentViews.length}
             </Typography>
           </FlexBetween>
-          <FlexBetween>
+          {/*<FlexBetween>
             <Typography color={medium}>Impressions of your post</Typography>
             <Typography color={main} fontWeight="500">
               {impressions}
             </Typography>
           </FlexBetween>
+              */}
         </Box>
   
         <Divider />

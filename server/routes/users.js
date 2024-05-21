@@ -7,7 +7,8 @@ import {
     createFriend,
     removeFriend,
     deleteUser,
-    searchUsers
+    searchUsers,
+    incrementProfileViews
 } from "../controllers/users.js";
 import { verifyToken } from "../middlewares/auth.js";
 
@@ -28,6 +29,7 @@ router.put('/:id/friends/:friendId', createFriend);
 // Delete a user
 router.delete('/:id', deleteUser);
 router.delete('/:id/friends/:friendId', removeFriend);
+router.patch('/increment-profile-view', verifyToken, incrementProfileViews);
 
 
 

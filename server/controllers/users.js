@@ -193,26 +193,43 @@ export const searchUsers = async (req, res) => {
 };
 
 // To increment viewedProfile
-export const viewedProfileIncrement = async (req, res) => {
-  const { profileUserId, viewerUserId } = req.body;
-
+export const incrementProfileViews = async (req, res) => {
   try {
-    // Find the user whose profile is being viewed
-    const profileUser = await User.findById(profileUserId);
+      const { viewerId, profileUserId } = req.body;
+      const viewInterval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-    if (!profileUser) {
-      return res.status(404).json({ message: "Profile user not found" });
-    }
+      if (viewerId !== profileUserId) {
+          const profileUser = await User.findById(profileUserId);
 
-    // Increment the viewedProfile count
-    profileUser.viewedProfile += 1;
-    await profileUser.save();
+          if (!profileUser) {
+              return res.status(404).json({ message: "Profile user not found" });
+          }
 
-    return res
-      .status(200)
-      .json({ message: "Viewed profile count incremented successfully" });
+          // Find the recent view by the same user
+          const recentView = profileUser.recentViews.find(view => view.viewerId.equals(viewerId));
+          const now = new Date();
+
+          if (!recentView || (now - new Date(recentView.viewedAt)) > viewInterval) {
+              // Increment the viewedProfile field
+              profileUser.viewedProfile += 1;
+
+              if (recentView) {
+                  // Update the existing recent view timestamp
+                  recentView.viewedAt = now;
+              } else {
+                  // Add a new recent view entry
+                  profileUser.recentViews.push({ viewerId, viewedAt: now });
+              }
+
+              await profileUser.save();
+              return res.status(200).json({ message: "Profile view incremented" });
+          } else {
+              return res.status(200).json({ message: "Profile view not incremented due to frequent viewing" });
+          }
+      } else {
+          return res.status(400).json({ message: "Users cannot increment their own profile views" });
+      }
   } catch (error) {
-    console.error("Error viewing profile:", error);
-    return res.status(500).json({ message: "Internal server error" });
+      return res.status(500).json({ message: error.message });
   }
 };

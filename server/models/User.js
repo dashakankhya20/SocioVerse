@@ -41,6 +41,10 @@ const userSchema = new Schema({
         type: Number,
         default: 0
     },
+    recentViews: [{
+        viewerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        viewedAt: { type: Date, default: Date.now }
+    }],
     profileLock: {
         type: Boolean,
         default: false

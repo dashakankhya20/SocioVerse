@@ -1,10 +1,9 @@
 import React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
 import PostWidget from "./PostWidget";
 import Loading from "scenes/progress/Loading";
-
 import { Typography, useTheme } from "@mui/material";
 
 const PostsWidget = ({ userId, isProfile = false }) => {
@@ -13,6 +12,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
   const posts = useSelector((state) => state.posts);
   const token = useSelector((state) => state.token);
   const medium = palette.neutral.medium;
+  const [loading, setLoading] = useState(true);
   console.log("Token ", token);
 
   const getPosts = async () => {
@@ -23,6 +23,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
     const data = await response.json();
     //console.log("Data", data);
     dispatch(setPosts({ posts: data }));
+    setLoading(false);
   };
   const getUserPosts = async () => {
     const response = await fetch(`http://localhost:3001/posts/user/${userId}`, {
@@ -31,6 +32,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
     });
     const data = await response.json();
     dispatch(setPosts({ posts: data }));
+    setLoading(false);
   };
 
   console.log("PostsWidget", posts);
@@ -41,6 +43,10 @@ const PostsWidget = ({ userId, isProfile = false }) => {
       getPosts();
     }
   }, [userId, isProfile, token]);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>

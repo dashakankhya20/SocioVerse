@@ -69,6 +69,7 @@ const MyPostWidget = ({ picturePath }) => {
                     placeholder="What's on your mind..."
                     onChange={(e) => setPost(e.target.value)}
                     value={post}
+                    multiline
                     sx={{
                         width: "100%",
                         backgroundColor: palette.neutral.light,
@@ -147,7 +148,7 @@ const MyPostWidget = ({ picturePath }) => {
                         Image
                     </Typography>
                 </FlexBetween>
-                {isNonMobileScreens ? (
+                {/* {isNonMobileScreens ? (
                     <>
                         <FlexBetween gap="0.25rem">
                             <GifBoxOutlinedIcon sx={{ color: mediumMain }} />
@@ -172,7 +173,7 @@ const MyPostWidget = ({ picturePath }) => {
                     <FlexBetween gap="0.25rem">
                     <MoreHorizOutlinedIcon sx={{ color: mediumMain}}/>
                 </FlexBetween>
-                )}
+                )} */}
               <Button
               disabled={!post}
               onClick={handlePost}

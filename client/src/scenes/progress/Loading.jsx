@@ -9,7 +9,7 @@ const Loading = () => {
         justifyContent="center"
         marginTop="7rem"
     >
-        <CircularProgress />
+        <CircularProgress color="primary"/>
     </Box>
   )
 }

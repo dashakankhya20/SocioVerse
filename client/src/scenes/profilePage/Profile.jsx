@@ -14,7 +14,8 @@ const Profile = () => {
   console.log("Profile UserID: ", id);
   const token = useSelector((state) => state.token);
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
-
+  const viewerId = useSelector((state) => state.user._id);
+  
   const getUser = async () => {
     const response = await fetch(`http://localhost:3001/users/${id}`, {
       method: "GET",
@@ -22,7 +23,28 @@ const Profile = () => {
     });
     const data = await response.json();
     setUser(data);
+
+    if(viewerId !== id){
+      incrementProfileView(viewerId, id);
+    }
   };
+
+  const incrementProfileView = async (viewerId, profileUserId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/users/increment-profile-view`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({viewerId, profileUserId})
+      });
+      const data = await response.json();
+      console.log("Profile View:",data.message);
+    } catch (error) {
+      console.error(`Error incrementing profile view: ${error}`);
+    }
+  }
 
   useEffect(() => {
     getUser();
