@@ -104,11 +104,12 @@ export const createFriend = async (req, res) => {
     const user = await User.findById(id);
     const friend = await User.findById(friendId);
     if (!user) {
-      return res.status(404).json({ message: "User  not found" });
+      return res.status(404).json({ message: "User not found" });
     }
     if (!friend) {
-      return res.status(404).json({ message: "friend not found" });
+      return res.status(404).json({ message: "Friend not found" });
     }
+
     // Add friendId to user's friends list
     if (!user.friends.includes(friendId)) {
       user.friends.push(friendId);
@@ -121,13 +122,18 @@ export const createFriend = async (req, res) => {
       await friend.save();
     }
 
-    // Return updated user data
-    return res.status(200).json(user);
+    // Populate the friends field with detailed friend information
+    const populatedUser = await user.populate(
+      "friends",
+      "firstName lastName occupation picturePath"
+    );
+
+    // Return populated friends data
+    return res.status(200).json(populatedUser.friends);
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
 };
-
 // Remove a friend
 export const removeFriend = async (req, res) => {
   try {
@@ -154,8 +160,11 @@ export const removeFriend = async (req, res) => {
       await friend.save();
     }
 
-    // Return updated user data
-    return res.status(200).json(user);
+    // Populate the friends field with detailed friend information
+    const populatedUser = await user.populate('friends', 'firstName lastName occupation picturePath');
+
+    // Return populated friends data
+    return res.status(200).json(populatedUser.friends);
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
@@ -195,41 +204,49 @@ export const searchUsers = async (req, res) => {
 // To increment viewedProfile
 export const incrementProfileViews = async (req, res) => {
   try {
-      const { viewerId, profileUserId } = req.body;
-      const viewInterval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const { viewerId, profileUserId } = req.body;
+    const viewInterval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-      if (viewerId !== profileUserId) {
-          const profileUser = await User.findById(profileUserId);
+    if (viewerId !== profileUserId) {
+      const profileUser = await User.findById(profileUserId);
 
-          if (!profileUser) {
-              return res.status(404).json({ message: "Profile user not found" });
-          }
-
-          // Find the recent view by the same user
-          const recentView = profileUser.recentViews.find(view => view.viewerId.equals(viewerId));
-          const now = new Date();
-
-          if (!recentView || (now - new Date(recentView.viewedAt)) > viewInterval) {
-              // Increment the viewedProfile field
-              profileUser.viewedProfile += 1;
-
-              if (recentView) {
-                  // Update the existing recent view timestamp
-                  recentView.viewedAt = now;
-              } else {
-                  // Add a new recent view entry
-                  profileUser.recentViews.push({ viewerId, viewedAt: now });
-              }
-
-              await profileUser.save();
-              return res.status(200).json({ message: "Profile view incremented" });
-          } else {
-              return res.status(200).json({ message: "Profile view not incremented due to frequent viewing" });
-          }
-      } else {
-          return res.status(400).json({ message: "Users cannot increment their own profile views" });
+      if (!profileUser) {
+        return res.status(404).json({ message: "Profile user not found" });
       }
+
+      // Find the recent view by the same user
+      const recentView = profileUser.recentViews.find((view) =>
+        view.viewerId.equals(viewerId)
+      );
+      const now = new Date();
+
+      if (!recentView || now - new Date(recentView.viewedAt) > viewInterval) {
+        // Increment the viewedProfile field
+        profileUser.viewedProfile += 1;
+
+        if (recentView) {
+          // Update the existing recent view timestamp
+          recentView.viewedAt = now;
+        } else {
+          // Add a new recent view entry
+          profileUser.recentViews.push({ viewerId, viewedAt: now });
+        }
+
+        await profileUser.save();
+        return res.status(200).json({ message: "Profile view incremented" });
+      } else {
+        return res
+          .status(200)
+          .json({
+            message: "Profile view not incremented due to frequent viewing",
+          });
+      }
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Users cannot increment their own profile views" });
+    }
   } catch (error) {
-      return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };

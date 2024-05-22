@@ -25,6 +25,7 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
+
 const MyPostWidget = ({ picturePath }) => {
     const dispatch = useDispatch();
     const [isImage, setIsImage] = useState(null);
@@ -36,6 +37,8 @@ const MyPostWidget = ({ picturePath }) => {
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
     const mediumMain = palette.neutral.mediumMain;
     const medium = palette.neutral.medium;
+    const posts = useSelector((state) => state.posts);
+    //console.log(posts);
     //console.log("Image",image)
     const handlePost = async () => {
         const formData = new FormData();
@@ -54,9 +57,9 @@ const MyPostWidget = ({ picturePath }) => {
             headers: { Authorization: `Bearer ${token}` },
             body: formData
         });
-        const posts = await response.json();
-        dispatch(setPosts({ posts }));
-        console.log(posts);
+        const newPost = await response.json();
+        dispatch(setPosts({ posts: [newPost, ...posts] }));
+        
         setImage(null);
         setPost("");
     };

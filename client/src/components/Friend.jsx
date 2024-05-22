@@ -28,8 +28,9 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
                     "Content-Type": "application/json"
                 }
             });
-        const data = await response.json();
-        dispatch(setFriends({ friends: data }))
+        const updatedFriends = await response.json();
+        dispatch(setFriends({ friends: updatedFriends }))
+        console.log("After adding friend: ", updatedFriends);
     }
 
     return (

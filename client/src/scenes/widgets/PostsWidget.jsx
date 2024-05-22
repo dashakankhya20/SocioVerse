@@ -35,7 +35,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
     setLoading(false);
   };
 
-  console.log("PostsWidget", posts);
+ // console.log("PostsWidget", posts);
   useEffect(() => {
     if (isProfile) {
       getUserPosts();
