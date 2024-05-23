@@ -214,19 +214,20 @@ export const incrementProfileViews = async (req, res) => {
         return res.status(404).json({ message: "Profile user not found" });
       }
 
-      // Find the recent view by the same user
-      const recentView = profileUser.recentViews.find((view) =>
-        view.viewerId.equals(viewerId)
-      );
       const now = new Date();
 
-      if (!recentView || now - new Date(recentView.viewedAt) > viewInterval) {
+      // Find the recent view by the same user
+      let recentViewIndex = profileUser.recentViews.findIndex((view) =>
+        view.viewerId.equals(viewerId)
+      );
+
+      if (recentViewIndex === -1 || now - new Date(profileUser.recentViews[recentViewIndex].viewedAt) > viewInterval) {
         // Increment the viewedProfile field
         profileUser.viewedProfile += 1;
 
-        if (recentView) {
+        if (recentViewIndex !== -1) {
           // Update the existing recent view timestamp
-          recentView.viewedAt = now;
+          profileUser.recentViews[recentViewIndex].viewedAt = now;
         } else {
           // Add a new recent view entry
           profileUser.recentViews.push({ viewerId, viewedAt: now });
