@@ -71,7 +71,7 @@ import {
         <FlexBetween
           gap="0.5rem"
           pb="1.1rem"
-          onClick={() => navigate(`/sample-profile/${userId}`)}
+          onClick={() => navigate(`/user-profile/${userId}`)}
         >
           <FlexBetween gap="1rem">
             <UserImage image={picturePath} />
@@ -136,10 +136,10 @@ import {
               */}
         </Box>
   
-        <Divider />
+        {/* <Divider /> */}
   
         {/* FOURTH ROW */}
-        <Box p="1rem 0">
+        {/* <Box p="1rem 0">
           <Typography fontSize="1rem" color={main} fontWeight="500" mb="1rem">
             Social Profiles
           </Typography>
@@ -169,7 +169,7 @@ import {
             </FlexBetween>
             <EditOutlined sx={{ color: main }} />
           </FlexBetween>
-        </Box>
+        </Box> */}
       </WidgetWrapper>
     );
   };

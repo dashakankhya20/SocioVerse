@@ -31,7 +31,7 @@ const SearchBar = ({placeholder, width}) => {
     }
 
     const handleClick = (id) => {
-        navigate(`/profile/${id}`)
+        navigate(`/user-profile/${id}`)
     }
 
     return (

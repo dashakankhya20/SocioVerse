@@ -16,8 +16,10 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
     const primaryDark = palette.primary.dark;
     const main = palette.neutral.main;
     const medium = palette.neutral.medium;
-
+    
+    
     const isFriend = Array.isArray(friends) && friends.some((friend) => friend._id === friendId);
+    console.log("Friends:", friends);
     const addRemoveFriend = async () => {
         const method = isFriend ? "DELETE" : "PUT";
         const response = await fetch(`http://localhost:3001/users/${_id}/friends/${friendId}`,
@@ -39,7 +41,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
                 <UserImage image={userPicturePath} size="55px" />
                 <Box
                     onClick={() => {
-                        navigate(`/sample-profile/${friendId}`);
+                        navigate(`/user-profile/${friendId}`);
                         navigate(0); //A workaround to get the components re render 
                     }}
                 >
@@ -61,7 +63,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
                     </Typography>
                 </Box>
             </FlexBetween>
-            {_id !== friendId && (
+            {_id !== friendId &&  (
                 <IconButton
                     onClick={() => addRemoveFriend()}
                     sx={{ backgroundColor: primaryLight, p: "0.6rem" }}

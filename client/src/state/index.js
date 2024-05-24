@@ -7,6 +7,7 @@ const initialState = {
   users: [],
   posts: [],
   friends: [],
+  profileUserFriends: [],
   comments: [],
 };
 
@@ -31,6 +32,9 @@ export const authSlice = createSlice({
       } else {
         console.error("User friends non existent!");
       }
+    },
+    setProfileUserFriends: (state, action) => {
+      state.profileUserFriends = action.payload.friends;
     },
     setPosts: (state, action) => {
       state.posts = action.payload.posts;
@@ -62,6 +66,7 @@ export const {
   setLogin,
   setLogout,
   setFriends,
+  setProfileUserFriends,
   setPosts,
   setPost,
   setComments,

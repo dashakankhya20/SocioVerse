@@ -23,9 +23,13 @@ const UserProfilePage = () => {
     const token = useSelector((state) => state.token);
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
     const viewerId = useSelector((state) => state.user._id);
+    const friends = useSelector((state) => state.user.friends);
+    console.log(friends)
     const { palette } = useTheme();
     const medium = palette.neutral.medium;
     const loggedInUserId = useSelector((state) => state.user._id);
+    const loggedInUserFriends = useSelector((state) => state.user.friends);
+    console.log(loggedInUserFriends)
 
     const getUser = async () => {
         const response = await fetch(`http://localhost:3001/users/${id}`, {
@@ -199,7 +203,7 @@ const UserProfilePage = () => {
                 <Box
                 width={isNonMobileScreens ? "60%" : "100%"}
                 >
-                    <FriendListWidget userId={user._id}/>
+                    <FriendListWidget userId={user._id} isProfilePage={true}/>
                 </Box>
                 <WidgetWrapper
                 width={isNonMobileScreens ? "60%" : "100%"}

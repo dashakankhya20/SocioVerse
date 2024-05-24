@@ -30,7 +30,7 @@ function App() {
             element={isAuth ? <Profile /> : <Navigate to="/" />}
           />
           <Route
-            path="/sample-profile/:id"
+            path="/user-profile/:id"
             element={isAuth ? <UserProfilePage /> : <Navigate to="/" />}
           />
           <Route 
