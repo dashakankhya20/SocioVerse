@@ -56,7 +56,11 @@ const FriendListWidget = ({ userId }) => {
                         />
                     ))
                 ) : (
-                    <p>You don't have any friends!</p>
+                    <>
+                    <Typography color={palette.neutral.medium} variant="h3" align="center" marginTop="2rem">
+                      You don't have any friends!
+                    </Typography>
+                  </>
                 )}
             </Box>
         </WidgetWrapper>

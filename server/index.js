@@ -12,21 +12,22 @@ import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
 import commentRoutes from "./routes/comments.js";
 import conversationRoutes from "./routes/conversation.js";
+import problemRoutes from "./routes/problem.js";
 import { register } from "./controllers/auth.js";
 import { verifyToken } from "./middlewares/auth.js";
 import { createPost } from "./controllers/posts.js";
+import { submitProblemReport } from "./controllers/problem.js";
 
-// CONFIGURATIONS 
+// CONFIGURATIONS
+dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config();
 const app = express();
 app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
-app.use(express.json({ limit: "30mb", extended: true }));
 app.use(cors());
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
@@ -46,6 +47,9 @@ const upload = multer({ storage });
 //here .picture should be there instead of picturePath
 app.post("/auth/register", upload.single("picture"), register);
 app.post("/posts", verifyToken, upload.single("picture"), createPost);
+// app.post("/problems", verifyToken, upload.single("picture"), submitProblemReport)
+// app.post("/report-submit/:userId", verifyToken, upload.single("screenshot"), submitProblemReport);
+
 
 // ROUTES
 app.use("/auth", authRoutes);
@@ -53,6 +57,7 @@ app.use("/users", userRoutes);
 app.use("/posts", postRoutes);
 app.use("/comments", commentRoutes);
 app.use("/conversation", conversationRoutes);
+app.use("/problems", problemRoutes);
 
 // MONGOOSE SETUP
 const PORT = process.env.PORT;

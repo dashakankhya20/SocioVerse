@@ -58,7 +58,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
         ) : (
           isProfile && (
             <>
-              <Typography color={medium} variant="h3" align="center">
+              <Typography color={medium} variant="h3" align="center" marginTop="2rem">
                 No posts to show
               </Typography>
             </>

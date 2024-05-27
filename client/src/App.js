@@ -4,6 +4,9 @@ import Loginpage from "scenes/loginPage/Loginpage";
 import Profile from "scenes/profilePage/Profile";
 import Messenger from "scenes/messenger/Messenger";
 import UserProfilePage from "scenes/profilePage/UserProfilePage";
+import ReportProblem from "scenes/reportProblem/ReportProblem";
+import EditProfilePage from "scenes/loginPage/EditProfilePage";
+import ThankYou from "scenes/defaultPages/ThankYou";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { CssBaseline, ThemeProvider } from "@mui/material";
@@ -33,9 +36,23 @@ function App() {
             path="/user-profile/:id"
             element={isAuth ? <UserProfilePage /> : <Navigate to="/" />}
           />
-          <Route 
+          <Route
+            path="/edit-profile/:id"
+            element={isAuth ? <EditProfilePage /> : <Navigate to="/" />}
+          />
+
+          <Route
+            path="/report-problem/:id"
+            element={isAuth ? <ReportProblem /> : <Navigate to="/" />}
+          />
+
+          <Route
             path="/message"
             element={isAuth ? <Messenger /> : <Navigate to="/" />}
+          />
+           <Route
+            path="/visit-again"
+            element={isAuth ? <ThankYou /> : <Navigate to="/" />}
           />
         </Routes>
       </BrowserRouter>

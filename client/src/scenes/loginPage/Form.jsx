@@ -65,7 +65,6 @@ const initialValuesLogin = {
 
 //console.log("It is being rendered")
 
-console.log("DOB: ", initialValuesRegister.dob)
 const Form = () => {
   const [pageType, setPageType] = useState("login");
   //const theme = useTheme();

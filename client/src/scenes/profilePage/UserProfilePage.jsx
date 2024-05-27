@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from 'scenes/navbar/Navbar'
-import { Box, Typography, useMediaQuery, useTheme, Button } from '@mui/material'
+import { Box, Typography, useMediaQuery, useTheme, Button, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, TextField, InputLabel, Select, MenuItem } from '@mui/material'
 import WidgetWrapper from 'components/WidgetWrapper'
 import FriendListWidget from 'scenes/widgets/FriendListWidget'
 import PostsWidget from 'scenes/widgets/PostsWidget'
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import UserImage from 'components/UserImage';
 import FlexBetween from 'components/FlexBetween';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -14,10 +14,18 @@ import EmailIcon from '@mui/icons-material/Email';
 import CakeIcon from '@mui/icons-material/Cake';
 import WorkIcon from '@mui/icons-material/Work';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import { showToast } from 'components/Toast'
 
 
 const UserProfilePage = () => {
     const [user, setUser] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [showForm, setShowForm] = useState(false);
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+    const navigate = useNavigate();
     const { id } = useParams();
     console.log("Profile UserID: ", id);
     const token = useSelector((state) => state.token);
@@ -31,6 +39,18 @@ const UserProfilePage = () => {
     const loggedInUserFriends = useSelector((state) => state.user.friends);
     console.log(loggedInUserFriends)
 
+    // local states for fields of user
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [picture, setPicture] = useState("");
+    const [location, setLocation] = useState("");
+    const [occupation, setOccupation] = useState("");
+    const [bio, setBio] = useState("");
+    const [relationshipStatus, setRelationshipStatus] = useState("");
+    const [dob, setDob] = useState(null);
+
     const getUser = async () => {
         const response = await fetch(`http://localhost:3001/users/${id}`, {
             method: "GET",
@@ -38,6 +58,16 @@ const UserProfilePage = () => {
         });
         const data = await response.json();
         setUser(data);
+        setFirstName(data.firstName);
+        setLastName(data.lastName);
+        setEmail(data.email);
+        setPassword(data.password);
+        setPicture(data.picturePath);
+        setLocation(data.location);
+        setOccupation(data.occupation);
+        setBio(data.bio);
+        setRelationshipStatus(data.relationshipStatus);
+        setDob(data.dob ? dayjs(data.dob) : null);
 
         if (viewerId !== id) {
             incrementProfileView(viewerId, id);
@@ -61,9 +91,95 @@ const UserProfilePage = () => {
         }
     }
 
+    const handleEditUser = async (e) => {
+        e.preventDefault();
+        try {
+            const updatedUserData = {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                location: location,
+                occupation: occupation,
+                bio: bio,
+                relationshipStatus: relationshipStatus,
+                dob: dob ? dob.format() : null // Assuming dob is stored in a specific format expected by your backend
+            };
+
+            const response = await fetch(`http://localhost:3001/users/${id}`, {
+                method: "PUT", // Use PATCH or PUT for updating existing data
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(updatedUserData)
+            });
+
+            if (response.ok) {
+                showToast("Your profile was edited!", "success");
+                // Refresh user data to reflect the changes
+                getUser();
+            } else {
+                const errorMessage = await response.text();
+                console.error(errorMessage);
+                showToast(errorMessage, "error");
+            }
+        } catch (error) {
+            console.error(error.message);
+            showToast(error.message, "error");
+        }
+    }
+
+    const handleDeleteUser = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`http://localhost:3001/users/${id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+            });
+
+            // Check if the deletion was successful
+            if (response.ok) {
+                const { message } = await response.json();
+                // Handle success message if needed
+                console.log(message);
+            } else {
+                // Handle non-200 status codes (e.g., 400, 404, etc.)
+                const errorMessage = await response.json();
+                console.error(errorMessage.message);
+                showToast(errorMessage.message, "error");
+            }
+        } catch (error) {
+            console.error(error.message);
+            showToast(error.message, "error");
+        }
+
+        // Navigate after successful deletion
+        navigate("/visit-again");
+    }
+
+    const handleClickOpen = () => {
+        setShowForm(true);
+        setOpen(true);
+    }
+
+    const handleClose = () => {
+        setOpen(false);
+        setShowForm(false);
+    }
+
+    const handleDeleteOpen = () => {
+        setShowDeleteAlert(true);
+    }
+
+    const handleDeleteClose = () => {
+        setShowDeleteAlert(false);
+    }
+
     useEffect(() => {
         getUser();
-    }, [])
+    }, [id, token])
 
 
     if (!user) {
@@ -85,7 +201,7 @@ const UserProfilePage = () => {
             >
 
                 <WidgetWrapper
-                width={isNonMobileScreens ? "60%" : "100%"}
+                    width={isNonMobileScreens ? "60%" : "100%"}
                 >
                     <Box>
                         <Box
@@ -110,7 +226,7 @@ const UserProfilePage = () => {
                                 gap="1.5rem"
                             >
 
-                                <Typography variant='h1'
+                                <Typography variant={isNonMobileScreens ? "h1" : "h2"}
                                     letterSpacing="0.1rem"
                                 >
                                     {user.firstName}{" "}{user.lastName}
@@ -186,8 +302,16 @@ const UserProfilePage = () => {
                                         flexDirection={isNonMobileScreens ? "row" : "column"}
                                         gap="1rem"
                                     >
-                                        <Button variant="contained" sx={{ color: "white" }}>Edit Profile</Button>
-                                        <Button variant="contained" sx={{ color: "white" }} color="error">Delete Account</Button>
+                                        <Button variant="contained" sx={{ color: "white" }}
+                                            onClick={handleClickOpen}
+                                        >
+                                            Edit Profile
+                                        </Button>
+                                        <Button variant="contained" sx={{ color: "white" }} color="error"
+                                            onClick={handleDeleteOpen}
+                                        >
+                                            Delete Account
+                                        </Button>
                                     </Box>
                                 )}
 
@@ -196,27 +320,194 @@ const UserProfilePage = () => {
                     </Box>
                 </WidgetWrapper>
                 <WidgetWrapper
-                width={isNonMobileScreens ? "60%" : "100%"}
+                    width={isNonMobileScreens ? "60%" : "100%"}
                 >
                     <Typography variant="h2" textAlign="center">{user.firstName}'s Friends</Typography>
                 </WidgetWrapper>
                 <Box
-                width={isNonMobileScreens ? "60%" : "100%"}
+                    width={isNonMobileScreens ? "60%" : "100%"}
                 >
-                    <FriendListWidget userId={user._id} isProfilePage={true}/>
+                    <FriendListWidget userId={user._id} isProfilePage={true} />
                 </Box>
                 <WidgetWrapper
-                width={isNonMobileScreens ? "60%" : "100%"}
+                    width={isNonMobileScreens ? "60%" : "100%"}
                 >
                     <Typography variant="h2" textAlign="center">{user.firstName}'s Posts</Typography>
                 </WidgetWrapper>
                 <Box
-                width={isNonMobileScreens ? "60%" : "100%"}
-                marginTop="-2rem"
+                    width={isNonMobileScreens ? "60%" : "100%"}
+                    marginTop="-2rem"
                 >
-                <PostsWidget userId={user._id} isProfile="true" />
+                    <PostsWidget userId={user._id} isProfile="true" />
                 </Box>
             </Box>
+
+            {/* Dialog box for edit profile */}
+            {showForm && (
+                <React.Fragment
+                >
+                    <Dialog
+                        open={open}
+                        onClose={handleClose}
+                        fullWidth
+                        PaperProps={{
+                            component: 'form',
+                            onSubmit: handleEditUser
+                        }}
+
+                    >
+                        <DialogTitle
+                        >
+                            <Typography variant="h2" textAlign="center">Edit Profile</Typography>
+                        </DialogTitle>
+                        <DialogContent
+                            className='custom-scrollbar'
+                        >
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                gap="1rem"
+                            >
+                                <Box>
+                                    <InputLabel>Enter your first name: </InputLabel>
+                                    <TextField
+                                        value={firstName}
+                                        fullWidth
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                    />
+                                </Box>
+                                <Box>
+                                    <InputLabel>Enter your last name: </InputLabel>
+                                    <TextField
+                                        value={lastName}
+                                        fullWidth
+                                        onChange={(e) => setLastName(e.target.value)}
+                                    />
+                                </Box>
+                                <Box>
+                                    <InputLabel>Enter your email:</InputLabel>
+                                    <TextField
+                                        value={email}
+                                        fullWidth
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                </Box>
+                                {/* <Box>
+                                    <InputLabel>Enter your password:</InputLabel>
+                                    <TextField
+                                        type="password"
+                                        value={password}
+                                        fullWidth
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                </Box> */}
+                                {/* <Box>
+                                    <InputLabel>Enter your picture URL:</InputLabel>
+                                    <TextField
+                                        value={picture}
+                                        fullWidth
+                                        onChange={(e) => setPicture(e.target.value)}
+                                    />
+                                </Box> */}
+                                <Box>
+                                    <InputLabel>Enter your location:</InputLabel>
+                                    <TextField
+                                        value={location}
+                                        fullWidth
+                                        onChange={(e) => setLocation(e.target.value)}
+                                    />
+                                </Box>
+                                <Box>
+                                    <InputLabel>Enter your occupation:</InputLabel>
+                                    <TextField
+                                        value={occupation}
+                                        fullWidth
+                                        onChange={(e) => setOccupation(e.target.value)}
+                                    />
+                                </Box>
+                                <Box>
+                                    <InputLabel>Enter your bio:</InputLabel>
+                                    <TextField
+                                        value={bio}
+                                        fullWidth
+                                        onChange={(e) => setBio(e.target.value)}
+                                    />
+                                </Box>
+                                <Box>
+                                    <InputLabel>Enter your relationship status:</InputLabel>
+                                    <Select
+                                        value={relationshipStatus}
+                                        name="relationshipStatus"
+                                        fullWidth
+                                        onChange={(e) => setRelationshipStatus(e.target.value)}
+                                    >
+
+                                        <MenuItem
+                                            value="Single"
+                                        >
+                                            Single
+                                        </MenuItem>
+                                        <MenuItem
+                                            value="Married"
+                                        >
+                                            Married
+                                        </MenuItem>
+                                        <MenuItem
+                                            value="It's complicated"
+                                        >
+                                            It's complicated
+                                        </MenuItem>
+                                        <MenuItem
+                                            value="Friends With Benefits"
+                                        >
+                                            Friends With Benefits
+                                        </MenuItem>
+                                    </Select>
+                                </Box>
+                                <Box>
+                                    <InputLabel>Enter your date of birth:</InputLabel>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            onChange={(date) => setDob(date)}
+                                            value={dob}
+
+                                        />
+                                    </LocalizationProvider>
+                                </Box>
+                            </Box>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button variant="contained" sx={{ color: "white", margin: "1rem", width: "100%" }} color="primary" type="submit">SUBMIT</Button>
+                        </DialogActions>
+                    </Dialog>
+                </React.Fragment>
+            )}
+            {showDeleteAlert && (
+                <React.Fragment>
+                    <Dialog
+                        open={showDeleteAlert}
+                        onClose={handleDeleteClose}
+                        fullWidth
+                        PaperProps={{
+                            component: 'form',
+                            onSubmit: handleDeleteUser
+                        }}
+                    >
+                        <DialogTitle>
+                            Delete Your Account
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                Are you sure you want to delete your account?
+                            </DialogContentText>
+                            <DialogActions>
+                                <Button type="submit">Yes</Button>
+                                <Button onClick={() => setShowDeleteAlert(false)}>No</Button>
+                            </DialogActions>
+                        </DialogContent>
+                    </Dialog>
+                </React.Fragment>
+            )}
         </Box>
     )
 }

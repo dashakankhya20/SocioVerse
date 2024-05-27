@@ -1,9 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import Toast from "components/Toast";
 import { authSlice } from "state";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
+import "./index.css";
 import {
   persistStore,
   persistReducer,
@@ -35,6 +37,7 @@ root.render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistStore(store)}>
         <App />
+        <Toast />
       </PersistGate>
     </Provider>
   </React.StrictMode>

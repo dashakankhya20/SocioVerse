@@ -31,7 +31,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
-
+  const loggedInUserId = useSelector((state) => state.user._id);
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
   const dark = theme.palette.neutral.dark;
@@ -73,14 +73,27 @@ const Navbar = () => {
             <LightModeIcon sx={{ color: dark, fontSize: "25px" }} />
           )}
         </IconButton>
-        {/* <Link to="/message">
-          <IconButton sx={{ color: "black" }}>
-            <MessageIcon sx={{ fontSize: "25px" }} />
-          </IconButton>
-        </Link> */}
+
+        <IconButton
+          onClick={() => navigate(`/message`)}
+          sx={{
+            color: dark
+          }
+          }>
+          <MessageIcon sx={{ fontSize: "25px" }} />
+        </IconButton>
+
 
         <NotificationsIcon sx={{ fontSize: "25px" }} />
-        <HelpIcon sx={{ fontSize: "25px" }} />
+        <IconButton
+          onClick={() => navigate(`/report-problem/${loggedInUserId}`)}
+          sx={{
+            color: dark
+          }}
+        >
+          <HelpIcon sx={{ fontSize: "25px" }} />
+        </IconButton>
+
         <FormControl variant="standard" value={fullName}>
           <Select
             value={fullName}
