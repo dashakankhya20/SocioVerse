@@ -13,20 +13,41 @@ const ChatProfileWidget = () => {
                 <WidgetWrapper
                     width="30%"
                     minHeight="30vh"
-                    height="auto"
+                    height="80vh"
                     sx={{
-                        display:"flex",
-                        flexDirection:"column",
-                        justifyContent:"center",
-                        alignItems:"center",
-                        gap:"2rem"
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        gap: "2rem"
                     }}
                 >
-                    
-                    <SearchBar placeholder="Search for friends" width="15rem"/>
+
+                    <SearchBar placeholder="Search for friends" width="15rem" />
                     <UserMessageWidget />
-                    
-                    
+
+
+                </WidgetWrapper>
+            )}
+
+            {!isNonMobileScreens && (
+                <WidgetWrapper
+                    width="100%"
+                    minHeight="30vh"
+                    height="80vh"
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        gap: "2rem"
+                    }}
+                >
+
+                    <SearchBar placeholder="Search for friends" width="15rem" />
+                    <UserMessageWidget />
+
+
                 </WidgetWrapper>
             )}
         </>

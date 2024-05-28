@@ -9,7 +9,7 @@ const ChatSectionWidget = () => {
     <WidgetWrapper
       width="70%"
       minHeight="70vh"
-      height="auto"
+      height="80vh"
       sx={{
         display: "flex",
         flexDirection: "column",

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { ChatBubbleOutlineOutlined } from '@mui/icons-material';
-import { IconButton, Typography, useTheme } from "@mui/material";
-import { ShareOutlined } from '@mui/icons-material';
+import { IconButton, Typography, useTheme, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Button } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
@@ -11,8 +11,9 @@ import Friend from 'components/Friend';
 import WidgetWrapper from 'components/WidgetWrapper';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setPost } from 'state';
+import { removePost, setPost } from 'state';
 import CommentWidget from './CommentWidget';
+import { showToast } from 'components/Toast';
 
 const PostWidget = ({ postData }) => {
   // console.log("PostWidget", postData.picturePath);
@@ -21,6 +22,7 @@ const PostWidget = ({ postData }) => {
   const [display, setDisplay] = useState(false);
   const [likes, setLikes] = useState(postData.likes);
   const [dislikes, setDislikes] = useState(postData.dislikes);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   //console.log(likes)
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
@@ -112,6 +114,40 @@ const PostWidget = ({ postData }) => {
   const showComments = () => {
     setDisplay(prevDisplay => !prevDisplay);
   }
+
+  const handleDeletePost = async (e, postId) => {
+    e.preventDefault();
+    try {
+      console.log("Frontend ID: ", postId);
+      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        showToast(result.message, "success");
+        dispatch(removePost(postId));
+      } else {
+        const errorResult = await response.json();
+        showToast(errorResult.message, "error");
+      }
+    } catch (error) {
+      console.error(error.message);
+      showToast(error.message, "error");
+    }
+    setShowDeleteAlert(false);
+  };
+
+
+  const handleDeleteOpen = () => {
+    setShowDeleteAlert(true);
+  }
+  const handleDeleteClose = () => {
+    setShowDeleteAlert(false);
+  }
   return (
     <WidgetWrapper m="2rem 0">
       {postUserData &&
@@ -172,11 +208,39 @@ const PostWidget = ({ postData }) => {
 
           </FlexBetween>
         </FlexBetween>
-        <IconButton>
-          <ShareOutlined />
-        </IconButton>
+        {postUserData._id === loggedInUserId && (
+          <IconButton onClick={handleDeleteOpen}>
+            <DeleteIcon />
+          </IconButton>
+        )}
       </FlexBetween>
       {display && <CommentWidget postId={postData._id} postData={postData} />}
+      {showDeleteAlert && (
+        <React.Fragment>
+          <Dialog
+            open={showDeleteAlert}
+            onClose={handleDeleteClose}
+            fullWidth
+            PaperProps={{
+              component: 'form',
+              onSubmit: (e) => handleDeletePost(e, postId)
+            }}
+          >
+            <DialogTitle>
+              Delete Your Account
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure you want to delete this post?
+              </DialogContentText>
+              <DialogActions>
+                <Button type="submit">Yes</Button>
+                <Button onClick={() => setShowDeleteAlert(false)}>No</Button>
+              </DialogActions>
+            </DialogContent>
+          </Dialog>
+        </React.Fragment>
+      )}
     </WidgetWrapper>
   )
 }

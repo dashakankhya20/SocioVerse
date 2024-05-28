@@ -52,6 +52,9 @@ export const authSlice = createSlice({
         return post;
       });
     },
+    removePost: (state, action) => {
+      state.posts = state.posts.filter((post) => post._id !== action.payload);
+    },
     setComments: (state, action) => {
       state.comments = action.payload.comments;
     },
@@ -69,6 +72,7 @@ export const {
   setProfileUserFriends,
   setPosts,
   setPost,
+  removePost,
   setComments,
   setUsers
 } = authSlice.actions;

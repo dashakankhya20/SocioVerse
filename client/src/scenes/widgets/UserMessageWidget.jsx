@@ -28,7 +28,7 @@ const UserMessageWidget = ({ messages }) => {
                                 display: "flex",
                                 justifyContent: "flex-start",
                                 alignItems: "center",
-                                padding: "2rem",
+                                padding: "1rem",
 
                             }}
                         >

@@ -80,7 +80,7 @@ const Navbar = () => {
             color: dark
           }
           }>
-          <MessageIcon sx={{ fontSize: "25px" }} />
+          <MessageIcon sx={{ color:"white", fontSize: "25px" }} />
         </IconButton>
 
 
