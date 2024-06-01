@@ -13,10 +13,10 @@ import postRoutes from "./routes/posts.js";
 import commentRoutes from "./routes/comments.js";
 import conversationRoutes from "./routes/conversation.js";
 import problemRoutes from "./routes/problem.js";
+import messageRoutes from "./routes/message.js";
 import { register } from "./controllers/auth.js";
 import { verifyToken } from "./middlewares/auth.js";
 import { createPost } from "./controllers/posts.js";
-import { submitProblemReport } from "./controllers/problem.js";
 
 // CONFIGURATIONS
 dotenv.config();
@@ -58,6 +58,7 @@ app.use("/posts", postRoutes);
 app.use("/comments", commentRoutes);
 app.use("/conversation", conversationRoutes);
 app.use("/problems", problemRoutes);
+app.use("/messages", messageRoutes);
 
 // MONGOOSE SETUP
 const PORT = process.env.PORT;
