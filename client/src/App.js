@@ -2,7 +2,7 @@ import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import Homepage from "scenes/homePage/Homepage";
 import Loginpage from "scenes/loginPage/Loginpage";
 import Profile from "scenes/profilePage/Profile";
-import Messenger from "scenes/messenger/Messenger";
+import Message from "scenes/messenger/Message";
 import UserProfilePage from "scenes/profilePage/UserProfilePage";
 import ReportProblem from "scenes/reportProblem/ReportProblem";
 import ThankYou from "scenes/defaultPages/ThankYou";
@@ -43,7 +43,7 @@ function App() {
 
           <Route
             path="/message"
-            element={isAuth ? <Messenger /> : <Navigate to="/" />}
+            element={isAuth ? <Message /> : <Navigate to="/" />}
           />
            <Route
             path="/visit-again"

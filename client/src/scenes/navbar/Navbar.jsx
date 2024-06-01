@@ -59,7 +59,7 @@ const Navbar = () => {
       </Typography>
       {/* Not for mobile screens */}
       {isNonMobileScreens && (
-        <SearchBar placeholder="Make a Search!" width="15rem" />
+        <SearchBar placeholder="Search for people..." width="15rem" />
       )}
     </FlexBetween>
 
@@ -80,7 +80,7 @@ const Navbar = () => {
             color: dark
           }
           }>
-          <MessageIcon sx={{ color:"white", fontSize: "25px" }} />
+          <MessageIcon sx={{ color:dark, fontSize: "25px" }} />
         </IconButton>
 
 
