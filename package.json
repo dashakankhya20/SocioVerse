@@ -20,10 +20,11 @@
   "type": "module",
   "scripts": {
     "install-server": "cd server && npm install",
-    "start-server": "cd server && node index.js",
     "install-client": "cd client && npm install",
     "build-client": "cd client && npm run build",
-    "start-client": "cd client && npm run start"
+    "start-server": "cd server && node index.js",
+    "install-all": "npm run install-server && npm run install-client",
+    "build": "npm run build-client"
   },
   "keywords": [],
   "author": "",
