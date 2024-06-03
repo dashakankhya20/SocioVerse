@@ -35,22 +35,32 @@ SocioVerse is a web-based social media platform created using the MERN stack. Us
 # Screenshots
 
 ## Login Page
-![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/5a4d3716-46d6-4bf8-b952-8397e374c433)
+![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/b8f7ab52-f132-4ed6-a679-c188319bc0ee)
 
 ## Registration Page
-![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/8b435c94-6075-4b92-9c50-999054a1801c)
+![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/9dfe3ceb-aacb-4220-b27a-8255e9a05a73)
 
 ## Home Page 
-![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/6be39bc8-f505-4325-b6d4-0e505c707934)
+![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/72c04a99-ac6d-48f2-a2b2-8a56d858978a)
 
 ## Profile Page 
-![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/f94f63fd-27f4-4fc4-83d7-ff09c19ac4ca)
+![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/fdb91b80-aacd-4104-9697-c7a8e11d2c04)
 
 ## Search functionality
-![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/401616c1-1f39-4ff7-ac61-a4b561ed4070)
+![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/ce5eb876-0cb6-4c17-9d30-b268ac0d813f)
 
 ## Comments
-![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/1705ebd0-9612-41fd-bb6a-547faae3bd20)
+![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/dce39804-12ae-4f71-a6ba-5feb0f38e068)
+
+## Report Problem
+![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/a31aa17f-efad-4d46-94ef-1ebab9ade485)
+
+## Chat Page
+![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/4f58493f-4e49-4cc9-88b1-b5dbd5b3b955)
+
+## Chatting With Your Friend
+![image](https://github.com/dashakankhya20/SocioVerse/assets/144155014/04f1a0a3-b092-431a-8b2b-97c72b237ab4)
+
 
 # Installation 
 1. Clone the repo or download the zip file.
