@@ -17,6 +17,7 @@ import messageRoutes from "./routes/message.js";
 import { register } from "./controllers/auth.js";
 import { verifyToken } from "./middlewares/auth.js";
 import { createPost } from "./controllers/posts.js";
+import { Server } from "socket.io";
 
 // CONFIGURATIONS
 dotenv.config();
@@ -65,10 +66,56 @@ const PORT = process.env.PORT;
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running on port: ${PORT}`);
-    });
+    console.log("Database connected!");
   })
   .catch((error) => {
     console.log(`${error} did not connect!`);
   });
+
+  const server = app.listen(PORT, () => {
+    console.log(`Server running on port: ${PORT}`);
+  });
+
+  const io = new Server(server, {
+    cors:{
+      origin:"http://localhost:3000",
+      credentials:true
+    }
+  })
+
+global.onlineUsers = new Map();
+
+const emitOnlineUsers = () => {
+  io.emit("online-users", Array.from(onlineUsers.keys()));
+};
+
+io.on("connection", (socket) => {
+  global.chatSocket = socket;
+  console.log("New socket connection:", socket.id);
+
+  socket.on("add-user", (userId) => {
+    console.log(`User ${userId} connected with socket ID ${socket.id}`);
+    onlineUsers.set(userId, socket.id);
+    emitOnlineUsers();
+  });
+
+  socket.on("send-msg", (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    console.log(`Message from ${data.from} to ${data.to}: ${data.message}`);
+    if (sendUserSocket) {
+      console.log(`Sending message to user ${data.to} via socket ${sendUserSocket}`);
+      socket.to(sendUserSocket).emit("msg-receive", data.message);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`Socket ${socket.id} disconnected`);
+    for (let [userId, socketId] of onlineUsers.entries()) {
+      if (socketId === socket.id) {
+        onlineUsers.delete(userId);
+        emitOnlineUsers();
+        break;
+      }
+    }
+  });
+});

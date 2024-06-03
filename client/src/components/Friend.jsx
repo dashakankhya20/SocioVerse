@@ -5,6 +5,7 @@ import { setFriends } from "state";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import { useNavigate } from "react-router-dom";
+import { localhost } from "utils/Api_Route";
 const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -19,10 +20,10 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
     
     
     const isFriend = Array.isArray(friends) && friends.some((friend) => friend._id === friendId);
-    console.log("Friends:", friends);
+    //console.log("Friends:", friends);
     const addRemoveFriend = async () => {
         const method = isFriend ? "DELETE" : "PUT";
-        const response = await fetch(`http://localhost:3001/users/${_id}/friends/${friendId}`,
+        const response = await fetch(`${localhost}/users/${_id}/friends/${friendId}`,
             {
                 method: method,
                 headers: {
@@ -32,7 +33,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
             });
         const updatedFriends = await response.json();
         dispatch(setFriends({ friends: updatedFriends }))
-        console.log("After adding friend: ", updatedFriends);
+        //console.log("After adding friend: ", updatedFriends);
     }
 
     return (

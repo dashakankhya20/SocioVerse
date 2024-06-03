@@ -5,6 +5,7 @@ import { setPosts } from "state";
 import PostWidget from "./PostWidget";
 import Loading from "scenes/progress/Loading";
 import { Typography, useTheme } from "@mui/material";
+import { localhost } from "utils/Api_Route";
 
 const PostsWidget = ({ userId, isProfile = false }) => {
   const dispatch = useDispatch();
@@ -13,10 +14,10 @@ const PostsWidget = ({ userId, isProfile = false }) => {
   const token = useSelector((state) => state.token);
   const medium = palette.neutral.medium;
   const [loading, setLoading] = useState(true);
-  console.log("Token ", token);
+  //console.log("Token ", token);
 
   const getPosts = async () => {
-    const response = await fetch("http://localhost:3001/posts", {
+    const response = await fetch(`${localhost}/posts`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -26,7 +27,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
     setLoading(false);
   };
   const getUserPosts = async () => {
-    const response = await fetch(`http://localhost:3001/posts/user/${userId}`, {
+    const response = await fetch(`${localhost}/posts/user/${userId}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });

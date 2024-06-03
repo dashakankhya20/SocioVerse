@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import SearchIcon from '@mui/icons-material/Search';
 import UserImage from 'components/UserImage';
 import { useNavigate } from 'react-router-dom';
+import { localhost } from 'utils/Api_Route';
 
 const SearchBar = ({placeholder, width}) => {
     const token = useSelector((state) => state.token);
@@ -17,14 +18,14 @@ const SearchBar = ({placeholder, width}) => {
 
     const handleSearch = async (value) => {
         try {
-            const response = await fetch(`http://localhost:3001/users/search?searchTerm=${value}`, {
+            const response = await fetch(`${localhost}/users/search?searchTerm=${value}`, {
                 method: 'GET',
                 headers: { Authorization: `Bearer ${token}` }
             });
             const searchData = await response.json();
             setSearchResults(searchData);
-            console.log("Search Results: ", searchResults)
-            console.log("Value: ", value)
+            // console.log("Search Results: ", searchResults)
+            // console.log("Value: ", value)
         } catch (error) {
             console.error("Error searching: ", error);
         }
@@ -65,6 +66,7 @@ const SearchBar = ({placeholder, width}) => {
             <Autocomplete
                 freeSolo
                 disableClearable
+                fullWidth
                 options={searchResults}
                 getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
                 onInputChange={(event, value) => {

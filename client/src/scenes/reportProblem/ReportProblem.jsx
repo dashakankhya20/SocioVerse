@@ -10,6 +10,7 @@ import FlexBetween from 'components/FlexBetween';
 import { useSelector } from 'react-redux';
 import { showToast } from 'components/Toast';
 import { useParams } from 'react-router-dom';
+import { localhost } from 'utils/Api_Route';
 
 const ReportProblem = () => {
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
@@ -29,10 +30,10 @@ const ReportProblem = () => {
                 showToast("Feature name is required!", "error");
             }
 
-            console.log("Description: ", description)
-            console.log("Feature Name: ", featureName)
+            // console.log("Description: ", description)
+            // console.log("Feature Name: ", featureName)
             if (description.trim() !== "" && featureName.trim() !== "") {
-                const response = await fetch(`http://localhost:3001/problems/submitProblem/${id}`, {
+                const response = await fetch(`${localhost}/problems/submitProblem/${id}`, {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json',
@@ -62,6 +63,7 @@ const ReportProblem = () => {
                 width="100%"
                 padding="2rem 6%"
                 gap="1rem"
+                mt="5rem"
             >
                 <WidgetWrapper width={isNonMobileScreens ? "60%" : "100%"}>
                     <Typography variant="h2" textAlign="center">Report Problem</Typography>

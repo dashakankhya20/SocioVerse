@@ -1,17 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import WidgetWrapper from 'components/WidgetWrapper';
 import { Box, Typography, useTheme } from '@mui/material';
 import ChatInput from './ChatInput';
 import { localhost } from 'utils/Api_Route';
 import { useSelector } from 'react-redux';
 import UserImage from 'components/UserImage';
+import { v4 as uuidv4 } from 'uuid';
 
-const ChatContainer = ({ currentChat }) => {
+const ChatContainer = ({ currentChat, socket, onlineUsers }) => {
   const [messages, setMessages] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const user = useSelector((state) => state.user);
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
+  const scrollRef = useRef();
+  const isOnline = onlineUsers.includes(currentChat._id);
 
   const fetchMessages = async () => {
     if (currentChat) {
@@ -52,9 +55,15 @@ const ChatContainer = ({ currentChat }) => {
           message: message,
         }),
       });
+      socket.current.emit("send-msg", {
+        to: currentChat._id,
+        from: user._id,
+        message: message,
+      });
 
       if (response.ok) {
         setMessages((prevMessages) => [...prevMessages, { fromSelf: true, message }]);
+
       } else {
         console.error('Failed to send message');
       }
@@ -62,6 +71,14 @@ const ChatContainer = ({ currentChat }) => {
       console.error('Error sending message:', error);
     }
   };
+
+  useEffect(() => {
+    if(socket.current){
+      socket.current.on("msg-receive", (msg) => {
+        setArrivalMessage({ fromSelf: false, message: msg });
+    })
+    }
+  }, [])
 
   useEffect(() => {
     if (arrivalMessage) {
@@ -73,6 +90,11 @@ const ChatContainer = ({ currentChat }) => {
     fetchMessages();
   }, [currentChat]);
 
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, currentChat]);
+
+
   if (!currentChat) {
     return <div>Loading...</div>; // Or any loading indicator
   }
@@ -83,6 +105,7 @@ const ChatContainer = ({ currentChat }) => {
         height="70vh"
         display="flex"
         flexDirection="column"
+
       >
         <Box
           display="flex"
@@ -92,14 +115,14 @@ const ChatContainer = ({ currentChat }) => {
           borderBottom={`0.5px groove ${neutralLight}`}
           paddingBottom="0.7rem"
         >
-          <UserImage image={currentChat.picturePath} size="30px" />
+          <UserImage image={currentChat.picturePath} size="30px" isOnline={isOnline} />
           <Typography variant="h4">{currentChat.firstName} {currentChat.lastName}</Typography>
         </Box>
 
-        <Box height="60vh" overflow="auto">
+        <Box height="60vh" overflow="auto" className="custom-scrollbar">
           {messages.map((message, index) => (
             <Box
-              key={index}
+              key={uuidv4()}
               display="flex"
               justifyContent={message.fromSelf ? 'flex-end' : 'flex-start'}
               alignItems="baseline"
@@ -136,6 +159,7 @@ const ChatContainer = ({ currentChat }) => {
               )}
             </Box>
           ))}
+          <div ref={scrollRef} />
         </Box>
         <ChatInput handleSendMsg={handleSendMessage} />
       </Box>

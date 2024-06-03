@@ -7,27 +7,27 @@ import GirlWithLaptop from '../../images/Welcome_Chat-1.png'
 
 const Welcome = () => {
   const user = useSelector((state) => state.user);
-  const {palette} = useTheme();
+  const { palette } = useTheme();
   const medium = palette.neutral.medium;
   return (
     <WidgetWrapper>
       <Box
-      height="75vh"
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="flex-start"
+        height="75vh"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="flex-start"
       >
         <Box
-        width="50rem"
-        height="20rem"
+          width="30rem"
+          height="20rem"
         >
-          <img src={GirlWithLaptop} 
-          style={{
-            height:"100%",
-            width:"100%",
-            objectFit:"contain"
-          }}
+          <img src={GirlWithLaptop}
+            style={{
+              height: "100%",
+              width: "100%",
+              objectFit: "contain"
+            }}
           />
         </Box>
         <Typography variant="h2" marginBottom="1rem">

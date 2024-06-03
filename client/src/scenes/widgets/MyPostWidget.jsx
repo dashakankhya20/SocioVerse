@@ -25,6 +25,8 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
+import { localhost } from "utils/Api_Route";
+import { showToast } from "components/Toast";
 
 const MyPostWidget = ({ picturePath }) => {
     const dispatch = useDispatch();
@@ -45,42 +47,62 @@ const MyPostWidget = ({ picturePath }) => {
         formData.append("userId", _id);
         formData.append("content", post);
         if (image) {
-           // formData.append("picturePath", image);
-           console.log("Image was appended!");
+            // formData.append("picturePath", image);
+            //console.log("Image was appended!");
             formData.append("picture", image);
             formData.append("picturePath", image.name);
-        }else{
-            console.log("Image was not uploaded!");
+        } else {
+            //console.log("Image was not uploaded!");
+            showToast("Image was not uploaded", "error")
         }
-        const response = await fetch(`http://localhost:3001/posts`, {
+        const response = await fetch(`${localhost}/posts`, {
             method: "POST",
             headers: { Authorization: `Bearer ${token}` },
             body: formData
         });
         const newPost = await response.json();
         dispatch(setPosts({ posts: [newPost, ...posts] }));
-        
+        showToast("Your post was uploaded!", "success");
         setImage(null);
         setPost("");
     };
 
     return (
         <WidgetWrapper>
-            <FlexBetween gap="1.5rem">
-                <UserImage image={picturePath} />
-                <InputBase
-                    placeholder="What's on your mind..."
-                    onChange={(e) => setPost(e.target.value)}
-                    value={post}
-                    multiline
-                    sx={{
-                        width: "100%",
-                        backgroundColor: palette.neutral.light,
-                        borderRadius: "2rem",
-                        padding: "1rem 2rem"
-                    }}
-                />
-            </FlexBetween>
+            {isNonMobileScreens ? (
+                <FlexBetween gap="1.5rem">
+                    <UserImage image={picturePath} />
+                    <InputBase
+                        placeholder="What's on your mind..."
+                        onChange={(e) => setPost(e.target.value)}
+                        value={post}
+                        multiline
+                        sx={{
+                            width: "100%",
+                            backgroundColor: palette.neutral.light,
+                            borderRadius: "2rem",
+                            padding: "1rem 2rem"
+                        }}
+                    />
+                </FlexBetween>
+            ) : (
+                <FlexBetween gap="1.5rem">
+                    <UserImage image={picturePath} size="35px"/>
+                    <InputBase
+                        placeholder="What's on your mind..."
+                        onChange={(e) => setPost(e.target.value)}
+                        value={post}
+                        multiline
+                        sx={{
+                            width: "100%",
+                            backgroundColor: palette.neutral.light,
+                            borderRadius: "2rem",
+                            padding: "1rem 2rem"
+                        }}
+                    />
+                </FlexBetween>
+            )}
+
             {isImage && (
                 <Box
                     border={`1px solid ${medium}`}
@@ -177,17 +199,17 @@ const MyPostWidget = ({ picturePath }) => {
                     <MoreHorizOutlinedIcon sx={{ color: mediumMain}}/>
                 </FlexBetween>
                 )} */}
-              <Button
-              disabled={!post}
-              onClick={handlePost}
-              sx={{
-                color: palette.background.alt,
-                backgroundColor: palette.primary.main,
-                borderRadius: "3rem"
-              }}
-              >
-                POST
-              </Button>
+                <Button
+                    disabled={!post}
+                    onClick={handlePost}
+                    sx={{
+                        color: palette.background.alt,
+                        backgroundColor: palette.primary.main,
+                        borderRadius: "3rem"
+                    }}
+                >
+                    POST
+                </Button>
             </FlexBetween>
         </WidgetWrapper>
     );

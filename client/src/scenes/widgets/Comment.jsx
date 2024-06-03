@@ -11,7 +11,7 @@ const Comment = ({ commentsByPostId }) => {
   const medium = palette.neutral.medium;
   const navigate = useNavigate();
 
-  console.log(commentsByPostId)
+  //console.log(commentsByPostId)
 
   return (
     <div>

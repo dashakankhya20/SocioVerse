@@ -7,17 +7,18 @@ import PostsWidget from "scenes/widgets/PostsWidget";
 import UserWidget from "scenes/widgets/UserWidget";
 import AdvertWidget from "scenes/widgets/AdvertWidget";
 import Navbar from "scenes/navbar/Navbar";
+import { localhost } from "utils/Api_Route";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const { id } = useParams();
-  console.log("Profile UserID: ", id);
+  //console.log("Profile UserID: ", id);
   const token = useSelector((state) => state.token);
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const viewerId = useSelector((state) => state.user._id);
   
   const getUser = async () => {
-    const response = await fetch(`http://localhost:3001/users/${id}`, {
+    const response = await fetch(`${localhost}/users/${id}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -31,7 +32,7 @@ const Profile = () => {
 
   const incrementProfileView = async (viewerId, profileUserId) => {
     try {
-      const response = await fetch(`http://localhost:3001/users/increment-profile-view`, {
+      const response = await fetch(`${localhost}/users/increment-profile-view`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
@@ -40,7 +41,7 @@ const Profile = () => {
         body: JSON.stringify({viewerId, profileUserId})
       });
       const data = await response.json();
-      console.log("Profile View:",data.message);
+      //console.log("Profile View:",data.message);
     } catch (error) {
       console.error(`Error incrementing profile view: ${error}`);
     }

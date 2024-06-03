@@ -18,6 +18,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { showToast } from 'components/Toast'
+import { localhost } from 'utils/Api_Route'
 
 
 const UserProfilePage = () => {
@@ -52,7 +53,7 @@ const UserProfilePage = () => {
     const [dob, setDob] = useState(null);
 
     const getUser = async () => {
-        const response = await fetch(`http://localhost:3001/users/${id}`, {
+        const response = await fetch(`${localhost}/users/${id}`, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
         });
@@ -76,7 +77,7 @@ const UserProfilePage = () => {
 
     const incrementProfileView = async (viewerId, profileUserId) => {
         try {
-            const response = await fetch(`http://localhost:3001/users/increment-profile-view`, {
+            const response = await fetch(`${localhost}/users/increment-profile-view`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -105,7 +106,7 @@ const UserProfilePage = () => {
                 dob: dob ? dob.format() : null // Assuming dob is stored in a specific format expected by your backend
             };
 
-            const response = await fetch(`http://localhost:3001/users/${id}`, {
+            const response = await fetch(`${localhost}/users/${id}`, {
                 method: "PUT", // Use PATCH or PUT for updating existing data
                 headers: {
                     'Content-Type': 'application/json',
@@ -132,7 +133,7 @@ const UserProfilePage = () => {
     const handleDeleteUser = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`http://localhost:3001/users/${id}`, {
+            const response = await fetch(`${localhost}/users/${id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -143,7 +144,7 @@ const UserProfilePage = () => {
             if (response.ok) {
                 const { message } = await response.json();
                 // Handle success message if needed
-                console.log(message);
+                //console.log(message);
             } else {
                 // Handle non-200 status codes (e.g., 400, 404, etc.)
                 const errorMessage = await response.json();
@@ -186,7 +187,7 @@ const UserProfilePage = () => {
         return null;
     }
 
-    console.log(user)
+    //console.log(user)
     return (
         <Box>
             <Navbar />
@@ -198,6 +199,7 @@ const UserProfilePage = () => {
                 alignItems="center"
                 gap="1rem"
                 height="auto"
+                mt="5rem"
             >
 
                 <WidgetWrapper

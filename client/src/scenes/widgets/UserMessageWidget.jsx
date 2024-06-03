@@ -8,10 +8,10 @@ import UserImage from 'components/UserImage'
 const UserMessageWidget = ({ messages }) => {
     const friends = useSelector((state) => state.user.friends);
     const user = useSelector((state) => state.user);
-    console.log(user);
+    //console.log(user);
     const { palette } = useTheme();
     const dark = palette.neutral.dark;
-    console.log(friends);
+    //console.log(friends);
     return (
         <div>
             {friends ? (

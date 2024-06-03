@@ -5,6 +5,7 @@ import WidgetWrapper from 'components/WidgetWrapper';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFriends, setProfileUserFriends } from 'state';
 import { useLocation } from 'react-router-dom';
+import { localhost } from 'utils/Api_Route';
 
 const FriendListWidget = ({ userId }) => {
     
@@ -14,10 +15,10 @@ const FriendListWidget = ({ userId }) => {
     const token = useSelector((state) => state.token);
     const isProfilePage = location.pathname.startsWith("/user-profile/");
     const friends = useSelector((state) => isProfilePage ? state.profileUserFriends : state.user.friends);
-    console.log(friends);
+    //console.log(friends);
 
     const getFriends = async () => {
-        const response = await fetch(`http://localhost:3001/users/${userId}/friends`, {
+        const response = await fetch(`${localhost}/users/${userId}/friends`, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` }
         });

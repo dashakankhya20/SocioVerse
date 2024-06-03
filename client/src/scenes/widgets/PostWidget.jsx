@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { ChatBubbleOutlineOutlined } from '@mui/icons-material';
-import { IconButton, Typography, useTheme, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Button } from "@mui/material";
+import { IconButton, Typography, useTheme, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Button, useMediaQuery } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { removePost, setPost } from 'state';
 import CommentWidget from './CommentWidget';
 import { showToast } from 'components/Toast';
+import { localhost } from 'utils/Api_Route';
 
 const PostWidget = ({ postData }) => {
   // console.log("PostWidget", postData.picturePath);
@@ -23,6 +24,7 @@ const PostWidget = ({ postData }) => {
   const [likes, setLikes] = useState(postData.likes);
   const [dislikes, setDislikes] = useState(postData.dislikes);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   //console.log(likes)
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
@@ -40,7 +42,7 @@ const PostWidget = ({ postData }) => {
 
   const patchLike = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/posts/${postId}/like/${loggedInUserId}`, {
+      const response = await fetch(`${localhost}/posts/${postId}/like/${loggedInUserId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -48,7 +50,7 @@ const PostWidget = ({ postData }) => {
         },
       });
       const updatedLikes = await response.json();
-      console.log("Updated Likes: ", updatedLikes)
+      //console.log("Updated Likes: ", updatedLikes)
       const updatedPost = { ...postData, likes: updatedLikes };
       setLikes(updatedLikes);
       setIsLiked(true);
@@ -67,7 +69,7 @@ const PostWidget = ({ postData }) => {
 
   const patchDislike = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/posts/${postId}/dislike/${loggedInUserId}`, {
+      const response = await fetch(`${localhost}/posts/${postId}/dislike/${loggedInUserId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -93,7 +95,7 @@ const PostWidget = ({ postData }) => {
 
   //console.log(postData)
   const getUserDetails = async () => {
-    const response = await fetch(`http://localhost:3001/users/${postData.userId}`, {
+    const response = await fetch(`${localhost}/users/${postData.userId}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -118,8 +120,8 @@ const PostWidget = ({ postData }) => {
   const handleDeletePost = async (e, postId) => {
     e.preventDefault();
     try {
-      console.log("Frontend ID: ", postId);
-      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+      //console.log("Frontend ID: ", postId);
+      const response = await fetch(`${localhost}/posts/${postId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -169,7 +171,7 @@ const PostWidget = ({ postData }) => {
           height="auto"
           alt={postData.picturePath}
           style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-          src={`http://localhost:3001/assets/${postData.picturePath}`}
+          src={`${localhost}/assets/${postData.picturePath}`}
         />
       )}
       <FlexBetween mt="0.25rem">
@@ -182,9 +184,16 @@ const PostWidget = ({ postData }) => {
                 <ThumbUpOffAltIcon />
               )}
             </IconButton>
-            <Typography>
+            {isNonMobileScreens ? (
+              <Typography>
               {likes.length} likes
             </Typography>
+            ): (
+              <Typography>
+              {likes.length} 
+            </Typography>
+            )}
+            
           </FlexBetween>
           <FlexBetween gap="0.3rem">
             <IconButton onClick={patchDislike}>
@@ -194,9 +203,16 @@ const PostWidget = ({ postData }) => {
                 <ThumbDownOffAltIcon />
               )}
             </IconButton>
-            <Typography>
+            {isNonMobileScreens ? (
+              <Typography>
               {dislikes.length} dislikes
             </Typography>
+            ): (
+              <Typography>
+              {dislikes.length} 
+            </Typography>
+            )}
+            
           </FlexBetween>
           <FlexBetween gap="0.3rem">
             <IconButton onClick={showComments}>

@@ -11,7 +11,8 @@ import {
   MenuItem,
   Stack,
   Tooltip,
-  styled
+  styled,
+  FormControl
 }
   from '@mui/material';
 //EditOutlinedIcon
@@ -25,6 +26,8 @@ import Dropzone from "react-dropzone";
 import FlexBetween from 'components/FlexBetween';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { localhost } from 'utils/Api_Route';
+import { showToast } from 'components/Toast';
 
 
 const registerSchema = yup.object().shape({
@@ -54,7 +57,7 @@ const initialValuesRegister = {
   location: "",
   occupation: "",
   bio: "",
-  relationshipStatus: "Single",
+  relationshipStatus: "",
   dob: null
 };
 
@@ -74,7 +77,7 @@ const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const isLogin = pageType === "login";
   const isRegister = pageType === "register";
-  console.log("Page type: ", pageType);
+  //console.log("Page type: ", pageType);
 
   const register = async (values, onSubmitProps) => {
     //this allows us to send form info with image 
@@ -82,11 +85,11 @@ const Form = () => {
     for (let value in values) {
       formData.append(value, values[value]);
     }
-    console.log(values);
+    //console.log(values);
 
     formData.append('picturePath', values.picture.name);
     const savedUserResponse = await fetch(
-      "http://localhost:3001/auth/register",
+      `${localhost}/auth/register`,
       {
         method: "POST",
         body: formData
@@ -96,12 +99,13 @@ const Form = () => {
     onSubmitProps.resetForm();
     if (savedUser) {
       setPageType("login");
+      showToast("Please login to continue", "info")
     }
   }
 
   const login = async (values, onSubmitProps) => {
     const loggedInResponse = await fetch(
-      "http://localhost:3001/auth/login",
+      `${localhost}/auth/login`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -284,12 +288,13 @@ const Form = () => {
                     gridColumn: "span 2"
                   }}
                 >
-
+                  <FormControl fullWidth>
+                    <InputLabel id="relationship_id">Relationship Status</InputLabel>
                   <Select
-                    label="Status"
+                  labelId="relationship_id"
+                    label="Relationship Status"
                     value={values.relationshipStatus}
                     name="relationshipStatus"
-                    defaultValue="Single"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     error={Boolean(touched.relationshipStatus) && Boolean(errors.relationshipStatus)}
@@ -320,11 +325,15 @@ const Form = () => {
                       Friends With Benefits
                     </MenuItem>
                   </Select>
+                  </FormControl>
+                  
                 </Box>
                 {/* date of birth */}
 
                 <Box
-                  sx={{ gridColumn: "span 2" }}
+                 width="100%"
+                  sx={{ gridColumn: "span 2"
+                   }}
                 >
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker

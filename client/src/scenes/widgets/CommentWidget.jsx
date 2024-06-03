@@ -5,6 +5,7 @@ import WidgetWrapper from 'components/WidgetWrapper';
 import UserImage from 'components/UserImage';
 import Comment from './Comment';
 import { setPost } from 'state';
+import { localhost } from 'utils/Api_Route';
 
 const CommentWidget = ({ postId, postData }) => {
     const { palette } = useTheme();
@@ -16,11 +17,11 @@ const CommentWidget = ({ postId, postData }) => {
     
     const dispatch = useDispatch();
     const comments = useSelector((state) => state.comments);
-    console.log(comments)
+    //console.log(comments)
 
     const getCommentsByPostId = async () => {
         try {
-          const response = await fetch(`http://localhost:3001/comments/post/${postId}`, {
+          const response = await fetch(`${localhost}/comments/post/${postId}`, {
             method: 'GET',
             headers: { Authorization: `Bearer ${token}` }
           });
@@ -40,7 +41,7 @@ const CommentWidget = ({ postId, postData }) => {
 
     const postComment = async () => {
         try {
-            const response = await fetch(`http://localhost:3001/comments`, {
+            const response = await fetch(`${localhost}/comments`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -66,7 +67,7 @@ const CommentWidget = ({ postId, postData }) => {
             console.error('Error posting comment:', error);
         }
     };
-    console.log("Post after comment: ",postData)
+    //console.log("Post after comment: ",postData)
     const handleCancel = () => {
         setComment('');
     };
