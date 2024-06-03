@@ -1,5 +1,5 @@
 # SocioVerse
-A web-based social media platform created using the MERN stack. Here the users can share posts, like/dislike each other's posts, and comment on posts.
+SocioVerse is a web-based social media platform created using the MERN stack. Users can share posts, like/dislike each other's posts, and comment on posts. The platform includes real-time chat functionality and allows users to manage their profiles and friendships.
 
 # Tech Stack
 ## Frontend
@@ -8,11 +8,29 @@ A web-based social media platform created using the MERN stack. Here the users c
 - Redux
 - Formik
 - Yup
+- react-toastify
+- emoji-picker-react
+- socket.io-client
 ## Backend
 - MongoDB
 - Express
 - Multer
 - Cors
+- Helmet
+- Socket.IO
+
+# Features 
+- User authentication (Login, Register)
+- Create, edit, delete posts
+- Like/Dislike posts
+- Comment on posts
+- Add/Remove friends
+- Edit user profile
+- Delete account
+- Toggle between dark mode and light mode
+- Report a problem
+- Real-time chatting with friends
+- Search functionality to find other users
 
 # Screenshots
 
@@ -36,12 +54,20 @@ A web-based social media platform created using the MERN stack. Here the users c
 
 # Installation 
 1. Clone the repo or download the zip file.
-> git clone 
-2. Go to server folder
+> git clone https://github.com/dashakankhya20/SocioVerse.git
+2. Navigate to the server folder and install dependencies.
 > cd server 
 > npm install
-3. Go to client folder 
+3. Navigate to the client folder and install dependencies.
 > cd client
 > npm install
-4. Create a .env file and paste MONGO_URI there.
-5. Also create a JWT_SECRET and PORT in .env. 
+4. Create a .env file in the server directory and add the following environment variables:
+> MONGO_URI=your_mongo_database_uri
+> JWT_SECRET=your_jwt_secret
+> PORT=your_preferred_port 
+5. Start the client application.
+> cd client
+> npm start
+6. Open another terminal and start the server application.
+> cd server
+> npm start
