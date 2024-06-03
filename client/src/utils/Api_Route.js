@@ -1,2 +1,2 @@
-export const localhost = "http://localhost:3001";
-export const deployHost = "";
+// export const localhost = "http://localhost:3001";
+export const localhost = "https://socioverse-yjbr.onrender.com";
