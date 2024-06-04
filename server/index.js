@@ -29,18 +29,15 @@ app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
-app.use(cors());
+app.use(cors({ origin: "https://socioverse-fe.onrender.com", credentials: true }));
 
 // Serve static files from the "public/assets" directory
-app.use("/assets", (req, res, next) => {
-  console.log(`Serving file: ${req.path}`);
-  next();
-}, express.static(path.join(__dirname, "public/assets")));
+app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
-// Serve static files for the frontend
-app.use(express.static(path.join(__dirname, "client/build")));
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, "../client/build")));
 
-// FILE STORAGE (taken from github repo of the package)
+// FILE STORAGE (taken from GitHub repo of the package)
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const dir = path.join(__dirname, "public/assets");
@@ -69,11 +66,11 @@ app.use("/messages", messageRoutes);
 
 // Catch-all route to serve the React frontend
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client/build", "index.html"));
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });
 
 // MONGOOSE SETUP
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3001;
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
