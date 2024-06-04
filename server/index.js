@@ -30,29 +30,35 @@ app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(cors());
-app.use("/assets", express.static(path.join(__dirname, "public/assets")));
+
+// Serve static files from the "public/assets" directory
+app.use("/assets", (req, res, next) => {
+  console.log(`Serving file: ${req.path}`);
+  next();
+}, express.static(path.join(__dirname, "public/assets")));
+
+// Serve static files for the frontend
+app.use(express.static(path.join(__dirname, "client/build")));
 
 // FILE STORAGE (taken from github repo of the package)
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "public/assets");
+    const dir = path.join(__dirname, "public/assets");
+    console.log(`Saving file to: ${dir}`);
+    cb(null, dir);
   },
   filename: function (req, file, cb) {
+    console.log(`Saving file as: ${file.originalname}`);
     cb(null, file.originalname);
   },
 });
 const upload = multer({ storage });
 
 // ROUTES WITH FILES
-//so here the picture will be uploaded locally before the user is registered
-//here .picture should be there instead of picturePath
 app.post("/auth/register", upload.single("picture"), register);
 app.post("/posts", verifyToken, upload.single("picture"), createPost);
-// app.post("/problems", verifyToken, upload.single("picture"), submitProblemReport)
-// app.post("/report-submit/:userId", verifyToken, upload.single("screenshot"), submitProblemReport);
 
-
-// ROUTES
+// API ROUTES
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/posts", postRoutes);
@@ -60,6 +66,11 @@ app.use("/comments", commentRoutes);
 app.use("/conversation", conversationRoutes);
 app.use("/problems", problemRoutes);
 app.use("/messages", messageRoutes);
+
+// Catch-all route to serve the React frontend
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/build", "index.html"));
+});
 
 // MONGOOSE SETUP
 const PORT = process.env.PORT;
@@ -72,17 +83,16 @@ mongoose
     console.log(`${error} did not connect!`);
   });
 
-  const server = app.listen(PORT, () => {
-    console.log(`Server running on port: ${PORT}`);
-  });
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port: ${PORT}`);
+});
 
-  const io = new Server(server, {
-    cors:{
-      //origin:"http://localhost:3000",
-      origin:"https://socioverse-fe.onrender.com",
-      credentials:true
-    }
-  })
+const io = new Server(server, {
+  cors: {
+    origin: "https://socioverse-fe.onrender.com",
+    credentials: true
+  }
+});
 
 global.onlineUsers = new Map();
 
