@@ -8,9 +8,11 @@ import {
     removeFriend,
     deleteUser,
     searchUsers,
-    incrementProfileViews
+    incrementProfileViews,
+    updateProfilePicture,
 } from "../controllers/users.js";
 import { verifyToken } from "../middlewares/auth.js";
+
 
 const router = express.Router();
 // Here the routes will start from /users
@@ -30,6 +32,7 @@ router.put('/:id/friends/:friendId', createFriend);
 router.delete('/:id', deleteUser);
 router.delete('/:id/friends/:friendId', removeFriend);
 router.patch('/increment-profile-view', verifyToken, incrementProfileViews);
+router.post("/:id/update-image", verifyToken, updateProfilePicture);
 
 
 

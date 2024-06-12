@@ -1,4 +1,6 @@
 import User from "../models/User.js";
+import cloudinary from "cloudinary";
+
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -249,5 +251,35 @@ export const incrementProfileViews = async (req, res) => {
     }
   } catch (error) {
     return res.status(500).json({ message: error.message });
+  }
+};
+
+// For updating user image 
+export const updateProfilePicture = async (req, res) => {
+  try {
+    console.log("Inside update profile")
+    console.log(req.file);
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    // Upload image to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "SocioVerse_Images",
+      public_id: `${Date.now()}-${req.file.originalname}`,
+    });
+
+    // Update user profile picture path in the database
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.picturePath = result.secure_url;
+    await user.save();
+
+    res.status(200).json({ picturePath: user.picturePath });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

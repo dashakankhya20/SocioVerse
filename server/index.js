@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import multer from "multer";
+import cloudinary from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
@@ -14,10 +16,12 @@ import commentRoutes from "./routes/comments.js";
 import conversationRoutes from "./routes/conversation.js";
 import problemRoutes from "./routes/problem.js";
 import messageRoutes from "./routes/message.js";
+import changePasswordRoutes from "./routes/passwordChange.js";
 import { register } from "./controllers/auth.js";
 import { verifyToken } from "./middlewares/auth.js";
 import { createPost } from "./controllers/posts.js";
 import { Server } from "socket.io";
+import { updateProfilePicture } from "./controllers/users.js";
 
 // CONFIGURATIONS
 dotenv.config();
@@ -29,31 +33,53 @@ app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
-app.use(cors({ origin: "https://socioverse-fe.onrender.com", credentials: true }));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 // Serve static files from the "public/assets" directory
-app.use("/assets", express.static(path.join(__dirname, "public/assets")));
+//app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, "../client/build")));
+//app.use(express.static(path.join(__dirname, "../client/build")));
 
-// FILE STORAGE (taken from GitHub repo of the package)
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const dir = path.join(__dirname, "public/assets");
-    console.log(`Saving file to: ${dir}`);
-    cb(null, dir);
-  },
-  filename: function (req, file, cb) {
-    console.log(`Saving file as: ${file.originalname}`);
-    cb(null, file.originalname);
+// Cloudinary configuration
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Multer-Cloudinary storage configuration
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary.v2,
+  params: {
+    folder: 'SocioVerse_Images',
+    public_id: (req, file) => `${Date.now()}-${file.originalname}`,
   },
 });
+
 const upload = multer({ storage });
+
+// FILE STORAGE (taken from GitHub repo of the package)
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     const dir = path.join(__dirname, "public/assets");
+//     console.log(`Saving file to: ${dir}`);
+//     cb(null, dir);
+//   },
+//   filename: function (req, file, cb) {
+//     console.log(`Saving file as: ${file.originalname}`);
+//     cb(null, file.originalname);
+//   },
+// });
+// const upload = multer({ storage });
 
 // ROUTES WITH FILES
 app.post("/auth/register", upload.single("picture"), register);
 app.post("/posts", verifyToken, upload.single("picture"), createPost);
+app.post("/users/:id/update-image", verifyToken, upload.single("image"), (req, res, next) => {
+  console.log("File received:", req.file);
+  next();
+}, updateProfilePicture);
 
 // API ROUTES
 app.use("/auth", authRoutes);
@@ -63,11 +89,12 @@ app.use("/comments", commentRoutes);
 app.use("/conversation", conversationRoutes);
 app.use("/problems", problemRoutes);
 app.use("/messages", messageRoutes);
+app.use("/password", changePasswordRoutes);
 
 // Catch-all route to serve the React frontend
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
-});
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+// });
 
 // MONGOOSE SETUP
 const PORT = process.env.PORT || 3001;
@@ -86,9 +113,10 @@ const server = app.listen(PORT, () => {
 
 const io = new Server(server, {
   cors: {
-    origin: "https://socioverse-fe.onrender.com",
-    credentials: true
-  }
+    //origin: "https://socioverse-fe.onrender.com",
+    origin: "http://localhost:3000",
+    credentials: true,
+  },
 });
 
 global.onlineUsers = new Map();
@@ -111,7 +139,9 @@ io.on("connection", (socket) => {
     const sendUserSocket = onlineUsers.get(data.to);
     console.log(`Message from ${data.from} to ${data.to}: ${data.message}`);
     if (sendUserSocket) {
-      console.log(`Sending message to user ${data.to} via socket ${sendUserSocket}`);
+      console.log(
+        `Sending message to user ${data.to} via socket ${sendUserSocket}`
+      );
       socket.to(sendUserSocket).emit("msg-receive", data.message);
     }
   });

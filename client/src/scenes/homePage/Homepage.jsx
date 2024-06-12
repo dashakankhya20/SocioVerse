@@ -14,7 +14,7 @@ const Homepage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const { _id, picturePath } = useSelector((state) => state.user);
   //console.log("Id: ", _id);
-
+  console.log("Homepage: ", picturePath)
   return (
     <Box>
       <Navbar />

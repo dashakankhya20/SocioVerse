@@ -21,8 +21,8 @@ const PostWidget = ({ postData }) => {
   //console.log(postData)
   const [postUserData, setPostUserData] = useState([]);
   const [display, setDisplay] = useState(false);
-  const [likes, setLikes] = useState(postData.likes);
-  const [dislikes, setDislikes] = useState(postData.dislikes);
+  const [likes, setLikes] = useState(postData.likes || []);
+  const [dislikes, setDislikes] = useState(postData.dislikes || []);  
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   //console.log(likes)
@@ -31,8 +31,8 @@ const PostWidget = ({ postData }) => {
   const loggedInUserId = useSelector((state) => state.user._id);
   //console.log(typeof loggedInUserId)
   const postId = postData._id;
-  const [isLiked, setIsLiked] = useState(Boolean(postData.likes.includes(loggedInUserId)));
-  const [isDisliked, setIsDisliked] = useState(Boolean(postData.dislikes.includes(loggedInUserId)));
+  const [isLiked, setIsLiked] = useState(Boolean(postData.likes && postData.likes.includes(loggedInUserId)));
+const [isDisliked, setIsDisliked] = useState(Boolean(postData.dislikes && postData.dislikes.includes(loggedInUserId)));
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
@@ -171,7 +171,7 @@ const PostWidget = ({ postData }) => {
           height="auto"
           alt={postData.picturePath}
           style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-          src={`${localhost}/assets/${postData.picturePath}`}
+          src={postData.picturePath}
         />
       )}
       <FlexBetween mt="0.25rem">
@@ -186,11 +186,11 @@ const PostWidget = ({ postData }) => {
             </IconButton>
             {isNonMobileScreens ? (
               <Typography>
-              {likes.length} likes
+              {likes && likes.length} likes
             </Typography>
             ): (
               <Typography>
-              {likes.length} 
+              {likes && likes.length} 
             </Typography>
             )}
             
@@ -205,11 +205,11 @@ const PostWidget = ({ postData }) => {
             </IconButton>
             {isNonMobileScreens ? (
               <Typography>
-              {dislikes.length} dislikes
+              {dislikes && dislikes.length} dislikes
             </Typography>
             ): (
               <Typography>
-              {dislikes.length} 
+              {dislikes && dislikes.length} 
             </Typography>
             )}
             
@@ -219,7 +219,7 @@ const PostWidget = ({ postData }) => {
               <ChatBubbleOutlineOutlined />
             </IconButton>
             <Typography>
-              {postData.comments.length}
+              {postData.comments && postData.comments.length}
             </Typography>
 
           </FlexBetween>
@@ -243,7 +243,7 @@ const PostWidget = ({ postData }) => {
             }}
           >
             <DialogTitle>
-              Delete Your Account
+              Delete Post
             </DialogTitle>
             <DialogContent>
               <DialogContentText>

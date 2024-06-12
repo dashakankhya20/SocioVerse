@@ -38,7 +38,7 @@ const UserWidget = ({ userId, picturePath }) => {
   if (!user) {
     return null;
   }
-
+  console.log(picturePath)
   const {
     firstName,
     lastName,
@@ -122,7 +122,7 @@ const UserWidget = ({ userId, picturePath }) => {
         <FlexBetween mb="0.5rem">
           <Typography color={medium}>Profile Views</Typography>
           <Typography color={main} fontWeight="500">
-            {recentViews.length}
+            {recentViews ? recentViews.length : "0"}
           </Typography>
         </FlexBetween>
         {/*<FlexBetween>

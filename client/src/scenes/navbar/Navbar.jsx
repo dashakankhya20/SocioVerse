@@ -41,6 +41,10 @@ const Navbar = () => {
 
   const fullName = `${user.firstName} ${user.lastName}`;
 
+  const navigateToChangePassword = () => {
+    navigate("/change-password");
+  }
+
   return (
     <Box position="fixed" top="0" width="100%" zIndex="1000">
       <FlexBetween padding="1rem 6%" backgroundColor={alt}>
@@ -117,6 +121,11 @@ const Navbar = () => {
                   <Typography>
                     {fullName}
                   </Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => navigateToChangePassword()}
+                >
+                  Change Password
                 </MenuItem>
                 <MenuItem onClick={() => dispatch(setLogout())}>
                   Log Out
@@ -197,6 +206,11 @@ const Navbar = () => {
                     <Typography>
                       {fullName}
                     </Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => navigateToChangePassword()}
+                  >
+                    Change Password
                   </MenuItem>
                   <MenuItem onClick={() => dispatch(setLogout())}>
                     Log Out

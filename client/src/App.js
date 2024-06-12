@@ -6,6 +6,8 @@ import Message from "scenes/messenger/Message";
 import UserProfilePage from "scenes/profilePage/UserProfilePage";
 import ReportProblem from "scenes/reportProblem/ReportProblem";
 import ThankYou from "scenes/defaultPages/ThankYou";
+import ChangePassword from "scenes/changePassword/ChangePassword";
+import ForgotPassword from "scenes/changePassword/ForgotPassword";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { CssBaseline, ThemeProvider } from "@mui/material";
@@ -35,7 +37,7 @@ function App() {
             path="/user-profile/:id"
             element={isAuth ? <UserProfilePage /> : <Navigate to="/" />}
           />
-         
+
           <Route
             path="/report-problem/:id"
             element={isAuth ? <ReportProblem /> : <Navigate to="/" />}
@@ -45,7 +47,18 @@ function App() {
             path="/message"
             element={isAuth ? <Message /> : <Navigate to="/" />}
           />
-           <Route
+
+          <Route
+            path="/change-password"
+            element={isAuth ? <ChangePassword /> : <Navigate to="/" />}
+          />
+
+          <Route
+            path="/forgot-password"
+            element={<ForgotPassword />}
+          />
+
+          <Route
             path="/visit-again"
             element={isAuth ? <ThankYou /> : <Navigate to="/" />}
           />

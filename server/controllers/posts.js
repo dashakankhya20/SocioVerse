@@ -1,16 +1,38 @@
 import Post from "../models/Post.js";
+import cloudinary from "cloudinary";
+import fs from "fs";
 
 // Creating a post
 export const createPost = async (req, res) => {
   try {
-    const { userId, content, picturePath } = req.body;
+    const { userId, content } = req.body;
+
+    // Check if a file was uploaded
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    // Upload image to Cloudinary
+    const result = await cloudinary.v2.uploader.upload(req.file.path, {
+      folder: "SocioVerse_Images",
+      public_id: `${Date.now()}-${req.file.originalname}`,
+    });
+
+    // Optimize URL
+    const picturePath = result.url;
+
     const newPost = new Post({ userId, content, picturePath });
     await newPost.save();
+
+    // Delete the temporary file created by multer
+    fs.unlinkSync(req.file.path);
+
     res.status(201).json(newPost);
   } catch (error) {
-    res.status(409).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
+
 // Getting all posts
 export const getFeedPosts = async (req, res) => {
   try {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Navbar from 'scenes/navbar/Navbar'
-import { Box, Typography, useMediaQuery, useTheme, Button, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, TextField, InputLabel, Select, MenuItem } from '@mui/material'
+import { Box, Typography, useMediaQuery, useTheme, Button, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, TextField, InputLabel, Select, MenuItem, IconButton } from '@mui/material'
 import WidgetWrapper from 'components/WidgetWrapper'
 import FriendListWidget from 'scenes/widgets/FriendListWidget'
 import PostsWidget from 'scenes/widgets/PostsWidget'
@@ -14,6 +14,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import CakeIcon from '@mui/icons-material/Cake';
 import WorkIcon from '@mui/icons-material/Work';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import EditIcon from '@mui/icons-material/Edit';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
@@ -39,6 +40,9 @@ const UserProfilePage = () => {
     const loggedInUserId = useSelector((state) => state.user._id);
     const loggedInUserFriends = useSelector((state) => state.user.friends);
     console.log(loggedInUserFriends)
+    const [imageDialogOpen, setImageDialogOpen] = useState(false);
+    const [newImage, setNewImage] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState("");
 
     // local states for fields of user
     const [firstName, setFirstName] = useState("");
@@ -160,6 +164,7 @@ const UserProfilePage = () => {
         navigate("/visit-again");
     }
 
+
     const handleClickOpen = () => {
         setShowForm(true);
         setOpen(true);
@@ -178,6 +183,61 @@ const UserProfilePage = () => {
         setShowDeleteAlert(false);
     }
 
+    const handleImageDialogOpen = () => {
+        setImageDialogOpen(true);
+    };
+
+    const handleImageDialogClose = () => {
+        setImageDialogOpen(false);
+        setNewImage(null);
+        setPreviewUrl("");
+    };
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setNewImage(file);
+            setPreviewUrl(URL.createObjectURL(file));
+        }
+    };
+    //console.log("New Image", newImage)
+    //console.log("Preview URL: ", previewUrl);
+    const handleImageUpload = async () => {
+        if (!newImage) {
+            showToast("Please select an image to upload.", "error");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', newImage);
+        console.log("New Image:", newImage);
+
+        try {
+            const response = await fetch(`${localhost}/users/${id}/update-image`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                showToast("Profile picture updated successfully!", "success");
+                // Update the user data to reflect the new picture
+                setUser(prevUser => ({ ...prevUser, picturePath: data.picturePath }));
+            } else {
+                const { message } = await response.json();
+                showToast(message, "error");
+            }
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            showToast("Failed to update profile picture.", "error");
+        }
+
+        handleImageDialogClose();
+    };
+
     useEffect(() => {
         getUser();
     }, [id, token])
@@ -187,7 +247,7 @@ const UserProfilePage = () => {
         return null;
     }
 
-    //console.log(user)
+    console.log(user)
     return (
         <Box>
             <Navbar />
@@ -217,8 +277,20 @@ const UserProfilePage = () => {
                             <Box
                                 borderRadius="50%" // This makes the box circular
                                 boxShadow="0px 0px 10px 5px rgba(0, 213, 250, 0.5)"
+                                position="relative"
                             >
-                                <UserImage image={user.picturePath} size="200px" />
+                                <UserImage image={user && user.picturePath} size="200px" />
+                                <IconButton
+                                    onClick={handleImageDialogOpen}
+                                    sx={{
+                                        position: "absolute",
+                                        backgroundColor: palette.neutral.medium,
+                                        bottom: "2px",
+                                        right: "12px"
+                                    }}
+                                >
+                                    <EditIcon color="primary" />
+                                </IconButton>
                             </Box>
 
                             <Box
@@ -344,6 +416,65 @@ const UserProfilePage = () => {
                 </Box>
             </Box>
 
+            {/* Dialog box for updating image */}
+            <Dialog open={imageDialogOpen} onClose={handleImageDialogClose}
+                fullWidth
+            >
+                <DialogTitle
+                >
+                    <Typography variant="h2" textAlign="center">Update Image</Typography>
+                </DialogTitle>
+                <DialogContent
+
+                >
+                    <input
+                        accept="image/*"
+                        id="contained-button-file"
+                        type="file"
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                    />
+                    <label htmlFor="contained-button-file">
+                        <Button
+                            variant="contained"
+                            component="span"
+                        >
+                            Choose Image
+                        </Button>
+                    </label>
+                    {previewUrl && (
+                        <Box
+                            mt={2}
+                            display="flex"
+                            justifyContent="center"
+                        >
+                            <Box
+                                position="relative"
+                                width="200px"
+                                height="200px"
+                            >
+                                <img
+                                    src={previewUrl}
+                                    alt="Profile Preview"
+                                    style={{
+                                        objectFit: "cover",
+                                        borderRadius: "50%",
+                                        width: "100%",
+                                        height: "100%"
+                                    }}
+                                />
+                            </Box>
+                        </Box>
+                    )}
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleImageDialogClose}>Cancel</Button>
+                    <Button onClick={handleImageUpload} variant="contained" color="primary">Update</Button>
+                </DialogActions>
+            </Dialog>
+
+
             {/* Dialog box for edit profile */}
             {showForm && (
                 <React.Fragment
@@ -370,6 +501,7 @@ const UserProfilePage = () => {
                                 flexDirection="column"
                                 gap="1rem"
                             >
+
                                 <Box>
                                     <InputLabel>Enter your first name: </InputLabel>
                                     <TextField

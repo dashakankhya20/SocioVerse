@@ -104,26 +104,35 @@ const Form = () => {
   }
 
   const login = async (values, onSubmitProps) => {
-    const loggedInResponse = await fetch(
-      `${localhost}/auth/login`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      }
-    );
-    const loggedIn = await loggedInResponse.json();
-    onSubmitProps.resetForm();
-    if (loggedIn) {
-      dispatch(
-        setLogin({
-          user: loggedIn.user,
-          token: loggedIn.token,
-        })
-      );
-      navigate("/home");
+    try {
+        const loggedInResponse = await fetch(
+            `${localhost}/auth/login`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(values),
+            }
+        );
+
+        if (loggedInResponse.ok) {
+            const loggedIn = await loggedInResponse.json();
+            dispatch(
+                setLogin({
+                    user: loggedIn.user,
+                    token: loggedIn.token,
+                })
+            );
+            navigate("/home");
+        } else {
+            // Show message for invalid credentials
+            showToast("Invalid credentials!", "error");
+        }
+    } catch (error) {
+        console.error('Error logging in:', error);
     }
-  };
+    onSubmitProps.resetForm();
+};
+
 
   const handleFormSubmit = async (values, onSubmitProps) => {
     if (isLogin) await login(values, onSubmitProps);
@@ -290,50 +299,51 @@ const Form = () => {
                 >
                   <FormControl fullWidth>
                     <InputLabel id="relationship_id">Relationship Status</InputLabel>
-                  <Select
-                  labelId="relationship_id"
-                    label="Relationship Status"
-                    value={values.relationshipStatus}
-                    name="relationshipStatus"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={Boolean(touched.relationshipStatus) && Boolean(errors.relationshipStatus)}
-                    InputLabelProps={{ helperText: touched.relationshipStatus && errors.relationshipStatus }}
-                    sx={{
-                      minWidth: 200,
-                    }}
-                  >
+                    <Select
+                      labelId="relationship_id"
+                      label="Relationship Status"
+                      value={values.relationshipStatus}
+                      name="relationshipStatus"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={Boolean(touched.relationshipStatus) && Boolean(errors.relationshipStatus)}
+                      inputLabelProps={{ helperText: touched.relationshipStatus && errors.relationshipStatus }}
+                      sx={{
+                        minWidth: 200,
+                      }}
+                    >
 
-                    <MenuItem
-                      value="Single"
-                    >
-                      Single
-                    </MenuItem>
-                    <MenuItem
-                      value="Married"
-                    >
-                      Married
-                    </MenuItem>
-                    <MenuItem
-                      value="It's complicated"
-                    >
-                      It's complicated
-                    </MenuItem>
-                    <MenuItem
-                      value="Friends With Benefits"
-                    >
-                      Friends With Benefits
-                    </MenuItem>
-                  </Select>
+                      <MenuItem
+                        value="Single"
+                      >
+                        Single
+                      </MenuItem>
+                      <MenuItem
+                        value="Married"
+                      >
+                        Married
+                      </MenuItem>
+                      <MenuItem
+                        value="It's complicated"
+                      >
+                        It's complicated
+                      </MenuItem>
+                      <MenuItem
+                        value="Friends With Benefits"
+                      >
+                        Friends With Benefits
+                      </MenuItem>
+                    </Select>
                   </FormControl>
-                  
+
                 </Box>
                 {/* date of birth */}
 
                 <Box
-                 width="100%"
-                  sx={{ gridColumn: "span 2"
-                   }}
+                  width="100%"
+                  sx={{
+                    gridColumn: "span 2"
+                  }}
                 >
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
@@ -374,6 +384,11 @@ const Form = () => {
                   helperText={touched.password && errors.password}
                   sx={{ gridColumn: "span 4" }}
                 />
+                  <Button
+                  onClick={() => navigate("/forgot-password")}
+                  >
+                    Forgot Password
+                  </Button>
               </>
             )}
 

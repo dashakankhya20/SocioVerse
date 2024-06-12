@@ -13,7 +13,7 @@ const UserImage = ({ image, size = "60px", isOnline = false }) => {
         width={size}
         height={size}
         alt="user"
-        src={`${localhost}/assets/${image}`}
+        src={image}
       />
       {isOnline && (
         <Box
