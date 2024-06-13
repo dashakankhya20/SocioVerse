@@ -38,7 +38,7 @@ const UserWidget = ({ userId, picturePath }) => {
   if (!user) {
     return null;
   }
-  console.log(picturePath)
+  //console.log(picturePath)
   const {
     firstName,
     lastName,

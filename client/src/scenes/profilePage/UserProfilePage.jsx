@@ -4,7 +4,7 @@ import { Box, Typography, useMediaQuery, useTheme, Button, Dialog, DialogActions
 import WidgetWrapper from 'components/WidgetWrapper'
 import FriendListWidget from 'scenes/widgets/FriendListWidget'
 import PostsWidget from 'scenes/widgets/PostsWidget'
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import UserImage from 'components/UserImage';
 import FlexBetween from 'components/FlexBetween';
@@ -20,6 +20,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { showToast } from 'components/Toast'
 import { localhost } from 'utils/Api_Route'
+import { setLogin } from 'state'
 
 
 const UserProfilePage = () => {
@@ -28,6 +29,7 @@ const UserProfilePage = () => {
     const [showForm, setShowForm] = useState(false);
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { id } = useParams();
     console.log("Profile UserID: ", id);
     const token = useSelector((state) => state.token);
@@ -225,7 +227,7 @@ const UserProfilePage = () => {
                 const data = await response.json();
                 showToast("Profile picture updated successfully!", "success");
                 // Update the user data to reflect the new picture
-                setUser(prevUser => ({ ...prevUser, picturePath: data.picturePath }));
+                dispatch(setLogin({ user: { ...user, picturePath: data.picturePath }, token }));
             } else {
                 const { message } = await response.json();
                 showToast(message, "error");
@@ -280,17 +282,20 @@ const UserProfilePage = () => {
                                 position="relative"
                             >
                                 <UserImage image={user && user.picturePath} size="200px" />
-                                <IconButton
-                                    onClick={handleImageDialogOpen}
-                                    sx={{
-                                        position: "absolute",
-                                        backgroundColor: palette.neutral.medium,
-                                        bottom: "2px",
-                                        right: "12px"
-                                    }}
-                                >
-                                    <EditIcon color="primary" />
-                                </IconButton>
+                                {loggedInUserId === id && (
+                                    <IconButton
+                                        onClick={handleImageDialogOpen}
+                                        sx={{
+                                            position: "absolute",
+                                            backgroundColor: palette.neutral.medium,
+                                            bottom: "2px",
+                                            right: "12px"
+                                        }}
+                                    >
+                                        <EditIcon color="primary" />
+                                    </IconButton>
+                                )}
+
                             </Box>
 
                             <Box
@@ -422,7 +427,7 @@ const UserProfilePage = () => {
             >
                 <DialogTitle
                 >
-                    <Typography variant="h2" textAlign="center">Update Image</Typography>
+                    <Typography variant="h4" textAlign="center">Update Image</Typography>
                 </DialogTitle>
                 <DialogContent
 

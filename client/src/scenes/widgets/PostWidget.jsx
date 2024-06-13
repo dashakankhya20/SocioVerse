@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChatBubbleOutlineOutlined } from '@mui/icons-material';
 import { IconButton, Typography, useTheme, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Button, useMediaQuery } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -9,36 +9,52 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import FlexBetween from 'components/FlexBetween';
 import Friend from 'components/Friend';
 import WidgetWrapper from 'components/WidgetWrapper';
-import { useState } from 'react';
+import Loading from 'scenes/progress/Loading';
 import { useDispatch, useSelector } from 'react-redux';
 import { removePost, setPost } from 'state';
 import CommentWidget from './CommentWidget';
 import { showToast } from 'components/Toast';
 import { localhost } from 'utils/Api_Route';
 
+
 const PostWidget = ({ postData }) => {
-  // console.log("PostWidget", postData.picturePath);
-  //console.log(postData)
-  const [postUserData, setPostUserData] = useState([]);
+  const [postUserData, setPostUserData] = useState(null);
   const [display, setDisplay] = useState(false);
   const [likes, setLikes] = useState(postData.likes || []);
-  const [dislikes, setDislikes] = useState(postData.dislikes || []);  
+  const [dislikes, setDislikes] = useState(postData.dislikes || []);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
-  //console.log(likes)
+
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
-  //console.log(typeof loggedInUserId)
   const postId = postData._id;
   const [isLiked, setIsLiked] = useState(Boolean(postData.likes && postData.likes.includes(loggedInUserId)));
-const [isDisliked, setIsDisliked] = useState(Boolean(postData.dislikes && postData.dislikes.includes(loggedInUserId)));
+  const [isDisliked, setIsDisliked] = useState(Boolean(postData.dislikes && postData.dislikes.includes(loggedInUserId)));
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
-  //const dark = palette.neutral.dark;
-  // console.log("Liked: ", isLiked);
-  // console.log("Dislike: ", isDisliked);
+
+  useEffect(() => {
+    if (postData.userId) {
+      getUserDetails(postData.userId);
+    }
+  }, [postData.userId]);
+
+  const getUserDetails = async (userId) => {
+    try {
+      const response = await fetch(`${localhost}/users/${userId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      const data = await response.json();
+      setPostUserData(data);
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
 
   const patchLike = async () => {
     try {
@@ -50,12 +66,11 @@ const [isDisliked, setIsDisliked] = useState(Boolean(postData.dislikes && postDa
         },
       });
       const updatedLikes = await response.json();
-      //console.log("Updated Likes: ", updatedLikes)
       const updatedPost = { ...postData, likes: updatedLikes };
       setLikes(updatedLikes);
       setIsLiked(true);
       setIsDisliked(false);
-      // If the post was previously disliked, remove the dislike
+
       if (isDisliked) {
         const updatedDislikes = postData.dislikes.filter(id => id !== loggedInUserId);
         updatedPost.dislikes = updatedDislikes;
@@ -81,7 +96,7 @@ const [isDisliked, setIsDisliked] = useState(Boolean(postData.dislikes && postDa
       setDislikes(updatedDislikes);
       setIsDisliked(true);
       setIsLiked(false);
-      // If the post was previously liked, remove the like
+
       if (isLiked) {
         const updatedLikes = postData.likes.filter(id => id !== loggedInUserId);
         updatedPost.likes = updatedLikes;
@@ -93,26 +108,6 @@ const [isDisliked, setIsDisliked] = useState(Boolean(postData.dislikes && postDa
     }
   };
 
-  //console.log(postData)
-  const getUserDetails = async () => {
-    const response = await fetch(`${localhost}/users/${postData.userId}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    })
-    const data = await response.json();
-    setPostUserData(data);
-  }
-  // console.log("Post User Data", postUserData);
-  useEffect(() => {
-
-    getUserDetails();
-  }, []) //eslint-disable-line react-hooks/exhaustive-deps
-  const fullName = postUserData && postUserData.firstName + " " + postUserData.lastName;
-  // console.log("PostUserData ", postUserData);
-  // console.log("Post Widget", postData)
-
   const showComments = () => {
     setDisplay(prevDisplay => !prevDisplay);
   }
@@ -120,7 +115,6 @@ const [isDisliked, setIsDisliked] = useState(Boolean(postData.dislikes && postDa
   const handleDeletePost = async (e, postId) => {
     e.preventDefault();
     try {
-      //console.log("Frontend ID: ", postId);
       const response = await fetch(`${localhost}/posts/${postId}`, {
         method: "DELETE",
         headers: {
@@ -143,29 +137,32 @@ const [isDisliked, setIsDisliked] = useState(Boolean(postData.dislikes && postDa
     setShowDeleteAlert(false);
   };
 
-
   const handleDeleteOpen = () => {
     setShowDeleteAlert(true);
   }
+
   const handleDeleteClose = () => {
     setShowDeleteAlert(false);
   }
+
+  if (!postUserData && !postData) {
+    return <Loading />;
+  }
+
+  const fullName = postUserData && postUserData.firstName + " " + postUserData.lastName;
+
   return (
     <WidgetWrapper m="2rem 0">
-      {postUserData &&
-        <Friend
-          friendId={postUserData._id}
-          name={fullName}
-          subtitle={postUserData.location}
-          userPicturePath={postUserData.picturePath}
-        />
-      }
-
+      <Friend
+        friendId={postUserData && postUserData._id}
+        name={fullName}
+        subtitle={postUserData && postUserData.location}
+        userPicturePath={postUserData && postUserData.picturePath}
+      />
       <Typography color={main} sx={{ mt: "1rem" }}>
         {postData.content}
       </Typography>
       {postData.picturePath && (
-
         <img
           width="100%"
           height="auto"
@@ -184,16 +181,7 @@ const [isDisliked, setIsDisliked] = useState(Boolean(postData.dislikes && postDa
                 <ThumbUpOffAltIcon />
               )}
             </IconButton>
-            {isNonMobileScreens ? (
-              <Typography>
-              {likes && likes.length} likes
-            </Typography>
-            ): (
-              <Typography>
-              {likes && likes.length} 
-            </Typography>
-            )}
-            
+            <Typography>{likes.length} likes</Typography>
           </FlexBetween>
           <FlexBetween gap="0.3rem">
             <IconButton onClick={patchDislike}>
@@ -203,62 +191,48 @@ const [isDisliked, setIsDisliked] = useState(Boolean(postData.dislikes && postDa
                 <ThumbDownOffAltIcon />
               )}
             </IconButton>
-            {isNonMobileScreens ? (
-              <Typography>
-              {dislikes && dislikes.length} dislikes
-            </Typography>
-            ): (
-              <Typography>
-              {dislikes && dislikes.length} 
-            </Typography>
-            )}
-            
+            <Typography>{dislikes.length} dislikes</Typography>
           </FlexBetween>
           <FlexBetween gap="0.3rem">
             <IconButton onClick={showComments}>
               <ChatBubbleOutlineOutlined />
             </IconButton>
-            <Typography>
-              {postData.comments && postData.comments.length}
-            </Typography>
-
+            <Typography>{postData.comments.length}</Typography>
           </FlexBetween>
         </FlexBetween>
-        {postUserData._id === loggedInUserId && (
+        {postUserData && postUserData._id === loggedInUserId && (
           <IconButton onClick={handleDeleteOpen}>
             <DeleteIcon />
           </IconButton>
         )}
       </FlexBetween>
-      {display && <CommentWidget postId={postData._id} postData={postData} />}
+      {display && <CommentWidget postId={postData && postData._id} postData={postData} />}
       {showDeleteAlert && (
-        <React.Fragment>
-          <Dialog
-            open={showDeleteAlert}
-            onClose={handleDeleteClose}
-            fullWidth
-            PaperProps={{
-              component: 'form',
-              onSubmit: (e) => handleDeletePost(e, postId)
-            }}
-          >
-            <DialogTitle>
-              Delete Post
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Are you sure you want to delete this post?
-              </DialogContentText>
-              <DialogActions>
-                <Button type="submit">Yes</Button>
-                <Button onClick={() => setShowDeleteAlert(false)}>No</Button>
-              </DialogActions>
-            </DialogContent>
-          </Dialog>
-        </React.Fragment>
+        <Dialog
+          open={showDeleteAlert}
+          onClose={handleDeleteClose}
+          fullWidth
+          PaperProps={{
+            component: 'form',
+            onSubmit: (e) => handleDeletePost(e, postId)
+          }}
+        >
+          <DialogTitle>
+            Delete Post
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete this post?
+            </DialogContentText>
+            <DialogActions>
+              <Button type="submit">Yes</Button>
+              <Button onClick={() => setShowDeleteAlert(false)}>No</Button>
+            </DialogActions>
+          </DialogContent>
+        </Dialog>
       )}
     </WidgetWrapper>
-  )
-}
+  );
+};
 
-export default PostWidget
+export default PostWidget;

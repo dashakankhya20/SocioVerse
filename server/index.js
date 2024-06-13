@@ -33,13 +33,13 @@ app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: "https://socioverse-fe.onrender.com", credentials: true }));
 
 // Serve static files from the "public/assets" directory
 //app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 // Serve static files from the React app
-//app.use(express.static(path.join(__dirname, "../client/build")));
+app.use(express.static(path.join(__dirname, "../client/build")));
 
 // Cloudinary configuration
 cloudinary.v2.config({
@@ -59,7 +59,7 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
-// FILE STORAGE (taken from GitHub repo of the package)
+// FILE STORAGE 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
 //     const dir = path.join(__dirname, "public/assets");
@@ -92,9 +92,9 @@ app.use("/messages", messageRoutes);
 app.use("/password", changePasswordRoutes);
 
 // Catch-all route to serve the React frontend
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../client/build", "index.html"));
-// });
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+});
 
 // MONGOOSE SETUP
 const PORT = process.env.PORT || 3001;
@@ -113,8 +113,8 @@ const server = app.listen(PORT, () => {
 
 const io = new Server(server, {
   cors: {
-    //origin: "https://socioverse-fe.onrender.com",
-    origin: "http://localhost:3000",
+    origin: "https://socioverse-fe.onrender.com",
+    //origin: "http://localhost:3000",
     credentials: true,
   },
 });

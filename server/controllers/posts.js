@@ -1,6 +1,5 @@
-import Post from "../models/Post.js";
-import cloudinary from "cloudinary";
-import fs from "fs";
+import cloudinary from 'cloudinary';
+import Post from '../models/Post.js';  // Assuming Post model is defined and exported from this path
 
 // Creating a post
 export const createPost = async (req, res) => {
@@ -12,20 +11,14 @@ export const createPost = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    // Upload image to Cloudinary
-    const result = await cloudinary.v2.uploader.upload(req.file.path, {
-      folder: "SocioVerse_Images",
-      public_id: `${Date.now()}-${req.file.originalname}`,
-    });
+    // The multer-storage-cloudinary automatically uploads the file to Cloudinary
+    // and attaches the file details to req.file
 
     // Optimize URL
-    const picturePath = result.url;
+    const picturePath = req.file.path; // Cloudinary URL
 
     const newPost = new Post({ userId, content, picturePath });
     await newPost.save();
-
-    // Delete the temporary file created by multer
-    fs.unlinkSync(req.file.path);
 
     res.status(201).json(newPost);
   } catch (error) {

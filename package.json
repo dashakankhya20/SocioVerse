@@ -23,7 +23,13 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "install-server": "cd server && npm install",
+    "install-client": "cd client && npm install",
+    "build-client": "cd client && npm run build",
+    "start-server": "cd server && node index.js",
+    "install-all": "npm run install-server && npm run install-client",
+    "build": "npm run build-client"
   },
   "keywords": [],
   "author": "",
