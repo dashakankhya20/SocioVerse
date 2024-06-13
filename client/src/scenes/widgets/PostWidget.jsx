@@ -172,7 +172,7 @@ const PostWidget = ({ postData }) => {
         />
       )}
       <FlexBetween mt="0.25rem">
-        <FlexBetween gap="1rem">
+        <FlexBetween gap={isNonMobileScreens ? "1rem" : "0.2rem"}> 
           <FlexBetween gap="0.3rem">
             <IconButton onClick={patchLike}>
               {isLiked ? (

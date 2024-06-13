@@ -31,17 +31,17 @@ const UserProfilePage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { id } = useParams();
-    console.log("Profile UserID: ", id);
+    //console.log("Profile UserID: ", id);
     const token = useSelector((state) => state.token);
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
     const viewerId = useSelector((state) => state.user._id);
     const friends = useSelector((state) => state.user.friends);
-    console.log(friends)
+    //console.log(friends)
     const { palette } = useTheme();
     const medium = palette.neutral.medium;
     const loggedInUserId = useSelector((state) => state.user._id);
     const loggedInUserFriends = useSelector((state) => state.user.friends);
-    console.log(loggedInUserFriends)
+    //console.log(loggedInUserFriends)
     const [imageDialogOpen, setImageDialogOpen] = useState(false);
     const [newImage, setNewImage] = useState(null);
     const [previewUrl, setPreviewUrl] = useState("");
@@ -92,7 +92,7 @@ const UserProfilePage = () => {
                 body: JSON.stringify({ viewerId, profileUserId })
             });
             const data = await response.json();
-            console.log("Profile View:", data.message);
+            //console.log("Profile View:", data.message);
         } catch (error) {
             console.error(`Error incrementing profile view: ${error}`);
         }
@@ -214,7 +214,7 @@ const UserProfilePage = () => {
 
         const formData = new FormData();
         formData.append('image', newImage);
-        console.log("New Image:", newImage);
+        //console.log("New Image:", newImage);
 
         try {
             const response = await fetch(`${localhost}/users/${id}/update-image`, {
@@ -251,7 +251,7 @@ const UserProfilePage = () => {
         return null;
     }
 
-    console.log(user)
+    //console.log(user)
     return (
         <Box>
             <Navbar />
