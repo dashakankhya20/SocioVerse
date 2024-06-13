@@ -123,6 +123,11 @@ const Navbar = () => {
                   </Typography>
                 </MenuItem>
                 <MenuItem
+                  onClick={() => navigate(`/user-profile/${loggedInUserId}`)}
+                >
+                  My Profile
+                </MenuItem>
+                <MenuItem
                   onClick={() => navigateToChangePassword()}
                 >
                   Change Password
@@ -206,6 +211,11 @@ const Navbar = () => {
                     <Typography>
                       {fullName}
                     </Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => navigate(`/user-profile/${loggedInUserId}`)}
+                  >
+                    My Profile
                   </MenuItem>
                   <MenuItem
                     onClick={() => navigateToChangePassword()}

@@ -1,5 +1,5 @@
 # SocioVerse
-SocioVerse is a web-based social media platform created using the MERN stack. Users can share posts, like/dislike each other's posts, and comment on posts. The platform includes real-time chat functionality and allows users to manage their profiles and friendships.
+SocioVerse is a social media web app built with the MERN stack. Users can register and log in, create and manage posts, and interact with others through likes, dislikes, and comments. The app also features real-time chat, profile management, friend management, and a responsive design that works on all devices. Users can toggle between dark and light modes, search for other users, and report issues. Password management includes OTP verification for password recovery and changes.
 
 # Tech Stack
 ## Frontend
@@ -19,18 +19,37 @@ SocioVerse is a web-based social media platform created using the MERN stack. Us
 - Helmet
 - Socket.IO
 
-# Features 
-- User authentication (Login, Register)
-- Create, edit, delete posts
-- Like/Dislike posts
-- Comment on posts
-- Add/Remove friends
-- Edit user profile
+# Features
+## User Authentication
+- Login, Register
+- Forgot password and change password through OTP verification
+
+## Profile Management
+- View profile
+- Edit profile
 - Delete account
+
+## Post Management
+- Create a post
+- Delete a post
+- Like/Dislike a post
+- Comment on a post
+
+## Friends Management
+- Add or remove friends
+
+## User Interface
 - Toggle between dark mode and light mode
-- Report a problem
+- Fully responsive design
+
+## Communication
 - Real-time chatting with friends
-- Search functionality to find other users
+
+## Search Functionality
+- Find people online
+
+## Report Issues
+- Report a problem
 
 # Screenshots
 
@@ -75,6 +94,15 @@ SocioVerse is a web-based social media platform created using the MERN stack. Us
 > MONGO_URI=your_mongo_database_uri
 > JWT_SECRET=your_jwt_secret
 > PORT=your_preferred_port 
+> CLOUD_NAME=your_cloudinary_cloud_name
+> CLOUDINARY_URL=your_cloudinary_url
+> CLOUDINARY_API_KEY=your_cloudinary_api_key
+> CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+> SMTP_HOST=smtp_host_address
+> SMTP_PORT=smtp_port_number
+> SMTP_USER=smtp_username
+> SMTP_PASS=smtp_password
+
 5. Start the client application.
 > cd client
 > npm start

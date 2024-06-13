@@ -134,6 +134,8 @@ const UserProfilePage = () => {
             console.error(error.message);
             showToast(error.message, "error");
         }
+        setOpen(false);
+        setShowForm(false);
     }
 
     const handleDeleteUser = async (e) => {
